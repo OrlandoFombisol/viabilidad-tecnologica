@@ -1,0 +1,44 @@
+:root {
+  /* Paleta corporativa */
+  --color-primary:        #1a3a5c;
+  --color-primary-light:  #2563a8;
+  --color-primary-dark:   #0f2438;
+  --color-accent:         #0d7de8;
+  --color-accent-light:   #e8f2fd;
+
+  /* Estados */
+  --color-approved:       #16a34a;
+  --color-approved-bg:    #f0fdf4;
+  --color-approved-border:#bbf7d0;
+  --color-denied:         #dc2626;
+  --color-denied-bg:      #fff1f2;
+  --color-denied-border:  #fecdd3;
+  --color-partial:        #d97706;
+  --color-partial-bg:     #fffbeb;
+  --color-partial-border: #fed7aa;
+  --color-pending:        #92400e;
+  --color-pending-bg:     #fffbeb;
+
+  /* Neutrales */
+  --color-bg:             #f1f5f9;
+  --color-surface:        #ffffff;
+  --color-border:         #e2e8f0;
+  --color-border-strong:  #cbd5e1;
+  --color-text-primary:   #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted:     #94a3b8;
+
+  /* Espaciado */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+
+  /* Sombras */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:  0 4px 12px rgba(0,0,0,.10), 0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg:  0 10px 30px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+
+  /* Tipografía */
+  --font-sans:  'Inter', 'Segoe UI', system-ui, sans-serif;
+}

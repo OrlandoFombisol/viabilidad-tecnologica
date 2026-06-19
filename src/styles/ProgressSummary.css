@@ -1,0 +1,69 @@
+@import './variables.css';
+
+.progress-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 22px 28px;
+  margin-top: 22px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.3s;
+}
+.progress-section.is-complete {
+  border-color: var(--color-approved-border);
+  background: linear-gradient(135deg, #fafffc, var(--color-surface));
+}
+
+/* Banner de completado */
+.completion-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-approved-bg);
+  border: 1px solid var(--color-approved-border);
+  color: var(--color-approved);
+  font-size: .8rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  animation: banner-in 0.4s ease;
+}
+@keyframes banner-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.progress-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
+.progress-eyebrow, .section-eyebrow {
+  display: block; color: var(--color-text-muted); font-size: .68rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px;
+}
+.progress-pct { color: var(--color-primary-light); font-size: .9rem; font-weight: 700; white-space: nowrap; }
+.progress-pct.pct-complete { color: var(--color-approved); }
+
+/* Barra de progreso mejorada */
+.progress-track {
+  height: 10px;
+  background: var(--color-border);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 14px;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary-light), var(--color-accent));
+  border-radius: inherit;
+  transition: width .4s ease;
+}
+.is-complete .progress-fill { background: linear-gradient(90deg, var(--color-approved), #22c55e); }
+
+/* Contadores */
+.decision-counts { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 14px; }
+.count-item { font-size: .78rem; color: var(--color-text-secondary); }
+.count-item strong { color: var(--color-primary); }
+.decision-approved strong { color: var(--color-approved); }
+.decision-partial strong  { color: var(--color-partial); }
+.decision-denied strong   { color: var(--color-denied); }
+
+@media (max-width: 640px) { .progress-section { padding: 18px; } }

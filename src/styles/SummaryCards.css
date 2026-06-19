@@ -1,0 +1,53 @@
+@import './variables.css';
+
+.summary-section { margin-top: 24px; }
+.summary-disclosure {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  text-align: left; background: transparent; border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  padding: 16px 20px; cursor: pointer; color: var(--color-text-primary);
+}
+.summary-disclosure:hover { background: var(--color-surface); border-color: var(--color-border-strong); }
+.summary-disclosure > span:first-child { display: flex; flex-direction: column; }
+.summary-disclosure strong { color: var(--color-primary); font-size: .9rem; }
+.summary-disclosure small { color: var(--color-text-muted); font-size: .74rem; margin-top: 2px; }
+.summary-kicker { color: var(--color-text-muted); font-size: .64rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+.summary-toggle { color: var(--color-primary-light); font-size: .78rem; font-weight: 700; white-space: nowrap; }
+.summary-toggle b { display: inline-grid; place-items: center; width: 24px; height: 24px; margin-left: 6px; border-radius: 50%; background: #e8f1fb; font-size: 1rem; }
+
+.summary-body { margin-top: 10px; }
+
+/* Cards grid */
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.summary-card {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-md); padding: 14px 15px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: border-color 0.15s;
+}
+.summary-card.has-approvals { border-color: var(--color-approved-border); background: #fafffe; }
+.card-element { color: var(--color-text-primary); font-size: .79rem; font-weight: 650; line-height: 1.25; }
+
+/* Cantidades */
+.card-qty-row { display: flex; gap: 12px; align-items: flex-end; }
+.card-qty-block { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+.card-qty { color: var(--color-primary); font-size: 1.3rem; font-weight: 700; line-height: 1; }
+.card-qty-approved { color: var(--color-approved); font-size: 1.3rem; font-weight: 700; line-height: 1; }
+.card-qty-label { color: var(--color-text-muted); font-size: .6rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 600; }
+.approved-block { border-left: 1px solid var(--color-approved-border); padding-left: 12px; }
+
+/* Mini progress bar dentro de cada card */
+.card-mini-bar { height: 4px; background: var(--color-border); border-radius: 99px; overflow: hidden; }
+.card-mini-fill { height: 100%; background: var(--color-approved); border-radius: inherit; transition: width .3s ease; }
+
+.card-requests-label { color: var(--color-text-muted); font-size: .65rem; }
+
+/* Totales */
+.summary-totals {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--color-approved-bg); border: 1px solid var(--color-approved-border);
+  border-radius: var(--radius-md); padding: 12px 18px; margin-top: 14px;
+}
+.totals-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--color-approved); flex: 1; }
+.totals-value { font-size: 1.1rem; font-weight: 700; color: var(--color-approved); }
+.totals-value small { font-size: .78rem; font-weight: 400; color: var(--color-text-secondary); }
+.totals-pct { font-size: .85rem; font-weight: 700; color: var(--color-approved); background: #fff; border: 1px solid var(--color-approved-border); border-radius: 99px; padding: 2px 10px; }

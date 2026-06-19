@@ -1,0 +1,116 @@
+@import './variables.css';
+
+/* Reutiliza .modal-overlay y .modal-box de ExportButton.css */
+
+.item-form-modal {
+  max-width: 600px;
+  padding: 0;
+  text-align: left;
+}
+
+/* Encabezado */
+.ifm-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 28px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+.ifm-kicker {
+  display: block;
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--color-primary-light);
+  margin-bottom: 3px;
+}
+.ifm-title {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+.ifm-close {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.ifm-close:hover { background: var(--color-bg); color: var(--color-text-primary); }
+
+/* Formulario */
+.ifm-body {
+  padding: 20px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ifm-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.ifm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.ifm-field label {
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--color-text-secondary);
+}
+.ifm-field input,
+.ifm-field select,
+.ifm-field textarea {
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: 9px 10px;
+  font: inherit;
+  font-size: .875rem;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.ifm-field input:focus,
+.ifm-field select:focus,
+.ifm-field textarea:focus {
+  outline: none;
+  border-color: var(--color-primary-light);
+  box-shadow: 0 0 0 3px rgba(37,99,168,.1);
+}
+.ifm-field textarea { resize: vertical; min-height: 72px; }
+.ifm-field input.has-error,
+.ifm-field select.has-error,
+.ifm-field textarea.has-error { border-color: var(--color-denied); }
+.ifm-error {
+  font-size: .67rem;
+  font-weight: 700;
+  color: var(--color-denied);
+}
+
+/* Acciones */
+.ifm-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 6px;
+  border-top: 1px solid var(--color-border);
+  margin-top: 2px;
+}
+
+@media (max-width: 560px) {
+  .ifm-row-2 { grid-template-columns: 1fr; }
+  .ifm-body  { padding: 16px 18px 20px; }
+  .ifm-header{ padding: 18px 18px 14px; }
+  .ifm-actions { flex-direction: column-reverse; }
+  .ifm-actions .btn { width: 100%; justify-content: center; }
+}

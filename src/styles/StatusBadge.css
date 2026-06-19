@@ -1,0 +1,30 @@
+@import './variables.css';
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.badge-pending  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.badge-approved { background: var(--color-approved-bg); color: var(--color-approved); border: 1px solid var(--color-approved-border); }
+.badge-denied   { background: var(--color-denied-bg);   color: var(--color-denied);   border: 1px solid var(--color-denied-border); }
+.badge-partial  { background: var(--color-partial-bg);  color: var(--color-partial);  border: 1px solid var(--color-partial-border); }
+
+.priority-badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.priority-alta  { background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; }
+.priority-media { background: #fffbeb; color: #b45309; border: 1px solid #fcd34d; }
+.priority-baja  { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }

@@ -1,0 +1,33 @@
+@import './variables.css';
+
+.executive-message {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 26px;
+  background: linear-gradient(135deg, #f8fbff, #f2f7fc);
+  border: 1px solid #cbdbea;
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin-top: 24px;
+}
+
+.exec-marker {
+  align-self: start;
+  color: var(--color-primary);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border-top: 3px solid var(--color-primary-light);
+  padding-top: 10px;
+}
+
+.exec-title { color: var(--color-primary); font-size: 1.12rem; margin-bottom: 10px; }
+.exec-lead { color: var(--color-text-primary); font-size: .93rem; line-height: 1.7; font-weight: 500; }
+.exec-body { color: var(--color-text-secondary); font-size: .86rem; line-height: 1.65; margin-top: 9px; }
+.exec-body strong { color: var(--color-primary); }
+
+@media (max-width: 640px) {
+  .executive-message { grid-template-columns: 1fr; gap: 12px; padding: 22px 20px; }
+  .exec-marker { width: max-content; }
+}
