@@ -101,20 +101,22 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
           <h2 className="section-title">Revisión de viabilidad por área y solicitante</h2>
           <p className="section-subtitle">Abra un área y registre la decisión para cada necesidad evaluada por Tecnología.</p>
         </div>
-        {!readOnly && (
-          <div className="table-actions">
-            <button className="btn btn-secondary" onClick={reset}>
-              {confirmReset ? 'Confirmar limpieza' : 'Limpiar revisión'}
-            </button>
-            <button className="btn btn-add" onClick={() => setModal({ mode: 'add' })}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14" aria-hidden="true">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              Nueva solicitud
-            </button>
-            <button className="btn btn-success" onClick={onApproveAll}>Aprobar todas</button>
-          </div>
-        )}
+        <div className="table-actions">
+          {!readOnly && (
+            <>
+              <button className="btn btn-secondary" onClick={reset}>
+                {confirmReset ? 'Confirmar limpieza' : 'Limpiar revisión'}
+              </button>
+              <button className="btn btn-success" onClick={onApproveAll}>Aprobar todas</button>
+            </>
+          )}
+          <button className="btn btn-add" onClick={() => setModal({ mode: 'add' })}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Nueva solicitud
+          </button>
+        </div>
       </div>
 
       <div className="review-toolbar">
@@ -269,17 +271,15 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
                     );
                   })}
 
-                  {!readOnly && (
-                    <button
-                      className="add-item-in-area"
-                      onClick={() => { setModal({ mode: 'add', defaultArea: area }); }}
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="12" height="12" aria-hidden="true">
-                        <path d="M12 5v14M5 12h14" />
-                      </svg>
-                      Agregar ítem en {area}
-                    </button>
-                  )}
+                  <button
+                    className="add-item-in-area"
+                    onClick={() => { setModal({ mode: 'add', defaultArea: area }); }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="12" height="12" aria-hidden="true">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Agregar ítem en {area}
+                  </button>
                 </div>
               )}
             </article>
