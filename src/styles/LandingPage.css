@@ -2,7 +2,7 @@
 .lp-root {
   position: fixed;
   inset: 0;
-  background: #030b18;
+  background: linear-gradient(150deg, #f0f6ff 0%, #e8f0fd 50%, #f5f8ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -33,20 +33,20 @@
 }
 .lp-orb-1 {
   width: 700px; height: 700px;
-  background: radial-gradient(circle, #0d7de8 0%, transparent 70%);
-  opacity: 0.09;
+  background: radial-gradient(circle, #2563a8 0%, transparent 70%);
+  opacity: 0.07;
   top: -280px; left: -160px;
 }
 .lp-orb-2 {
   width: 600px; height: 600px;
   background: radial-gradient(circle, #1a3a5c 0%, transparent 70%);
-  opacity: 0.18;
+  opacity: 0.06;
   bottom: -200px; right: -120px;
 }
 .lp-orb-3 {
   width: 480px; height: 480px;
-  background: radial-gradient(circle, #38bdf8 0%, transparent 70%);
-  opacity: 0.06;
+  background: radial-gradient(circle, #60a5fa 0%, transparent 70%);
+  opacity: 0.08;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
 }
@@ -56,8 +56,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    linear-gradient(rgba(37,99,168,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,168,.06) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
   -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
@@ -68,7 +68,7 @@
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
-  opacity: 0.035;
+  opacity: 0.02;
   pointer-events: none;
 }
 
@@ -76,7 +76,7 @@
 .lp-vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(3,11,24,.7) 100%);
+  background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(220,233,255,.4) 100%);
   pointer-events: none;
 }
 
@@ -100,48 +100,43 @@
   align-items: center;
   gap: 8px;
   padding: 6px 16px;
-  border: 1px solid rgba(13,125,232,.3);
-  background: rgba(13,125,232,.08);
+  border: 1px solid rgba(37,99,168,.2);
+  background: rgba(37,99,168,.07);
   border-radius: 100px;
   font-size: 0.74rem;
-  font-weight: 500;
-  color: #7db8f5;
+  font-weight: 600;
+  color: #1a3a5c;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin-bottom: 36px;
-  backdrop-filter: blur(8px);
 }
 
 .lp-badge-dot {
   width: 7px; height: 7px;
   border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 0 0 rgba(34,197,94,.5);
+  background: #16a34a;
+  box-shadow: 0 0 0 0 rgba(22,163,74,.5);
   animation: ping 2s cubic-bezier(0,0,.2,1) infinite;
 }
 
 @keyframes ping {
-  0%   { box-shadow: 0 0 0 0 rgba(34,197,94,.6); }
-  70%  { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
-  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+  0%   { box-shadow: 0 0 0 0 rgba(22,163,74,.6); }
+  70%  { box-shadow: 0 0 0 8px rgba(22,163,74,0); }
+  100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
 }
 
 /* ── Logo ── */
 .lp-logo {
   width: 80px; height: 80px;
-  background: linear-gradient(135deg, rgba(13,125,232,.2) 0%, rgba(13,125,232,.05) 100%);
-  border: 1px solid rgba(13,125,232,.35);
+  background: linear-gradient(135deg, #ffffff 0%, #e8f0fd 100%);
+  border: 1.5px solid rgba(37,99,168,.2);
   border-radius: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #7db8f5;
+  color: #2563a8;
   margin-bottom: 28px;
-  box-shadow:
-    0 0 0 1px rgba(13,125,232,.1),
-    0 0 30px rgba(13,125,232,.2),
-    inset 0 1px 0 rgba(255,255,255,.05);
-  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(37,99,168,.15), 0 1px 4px rgba(0,0,0,.06);
 }
 
 /* ── Title ── */
@@ -159,23 +154,18 @@
   font-size: clamp(2.6rem, 7vw, 4.2rem);
   font-weight: 800;
   letter-spacing: -0.035em;
-  background: linear-gradient(170deg, #ffffff 0%, #d0e8ff 40%, #7db8f5 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #0f172a;
 }
 
 .lp-title-word.lp-accent {
   font-size: clamp(2rem, 5vw, 3rem);
-  background: linear-gradient(135deg, #7db8f5 0%, #38bdf8 60%, #0d7de8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
+  color: #2563a8;
 }
 
 /* ── Subtitle ── */
 .lp-subtitle {
   font-size: 0.95rem;
-  color: #5a7a9d;
+  color: #475569;
   line-height: 1.7;
   max-width: 460px;
   margin-bottom: 36px;
@@ -187,11 +177,11 @@
   align-items: center;
   gap: 0;
   margin-bottom: 40px;
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(255,255,255,.06);
+  background: #ffffff;
+  border: 1px solid rgba(37,99,168,.12);
   border-radius: 14px;
   overflow: hidden;
-  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 12px rgba(37,99,168,.08);
 }
 
 .lp-stat {
@@ -205,13 +195,13 @@
 .lp-stat-num {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #e0eeff;
+  color: #1a3a5c;
   letter-spacing: -0.02em;
 }
 
 .lp-stat-label {
   font-size: 0.72rem;
-  color: #4a6480;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-weight: 500;
@@ -221,7 +211,7 @@
 .lp-stat-divider {
   width: 1px;
   height: 36px;
-  background: rgba(255,255,255,.06);
+  background: rgba(37,99,168,.1);
   flex-shrink: 0;
 }
 
@@ -236,8 +226,8 @@
   align-items: center;
   gap: 10px;
   padding: 16px 44px;
-  background: linear-gradient(135deg, #1468d0 0%, #0d5fb8 100%);
-  border: 1px solid rgba(56,189,248,.3);
+  background: linear-gradient(135deg, #2563a8 0%, #1a4f8f 100%);
+  border: 1px solid rgba(37,99,168,.3);
   border-radius: 100px;
   color: #ffffff;
   font-size: 1rem;
@@ -247,41 +237,21 @@
   overflow: hidden;
   outline: none;
   font-family: 'Inter', sans-serif;
-  box-shadow:
-    0 0 0 1px rgba(13,125,232,.2),
-    0 0 40px rgba(13,125,232,.25),
-    0 0 80px rgba(13,125,232,.1),
-    0 8px 32px rgba(0,0,0,.4),
-    inset 0 1px 0 rgba(255,255,255,.15);
+  box-shadow: 0 4px 20px rgba(37,99,168,.35), 0 1px 4px rgba(0,0,0,.1);
   animation: cta-glow 3s ease-in-out infinite;
 }
 
 @keyframes cta-glow {
-  0%, 100% {
-    box-shadow:
-      0 0 0 1px rgba(13,125,232,.2),
-      0 0 40px rgba(13,125,232,.25),
-      0 0 80px rgba(13,125,232,.1),
-      0 8px 32px rgba(0,0,0,.4),
-      inset 0 1px 0 rgba(255,255,255,.15);
-  }
-  50% {
-    box-shadow:
-      0 0 0 1px rgba(13,125,232,.35),
-      0 0 60px rgba(13,125,232,.45),
-      0 0 120px rgba(13,125,232,.2),
-      0 8px 32px rgba(0,0,0,.4),
-      inset 0 1px 0 rgba(255,255,255,.2);
-  }
+  0%, 100% { box-shadow: 0 4px 20px rgba(37,99,168,.3), 0 1px 4px rgba(0,0,0,.1); }
+  50%       { box-shadow: 0 6px 32px rgba(37,99,168,.5), 0 1px 4px rgba(0,0,0,.1); }
 }
 
-/* shimmer sweep */
 .lp-cta::before {
   content: '';
   position: absolute;
   top: 0; left: -120%;
   width: 80%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
   transform: skewX(-20deg);
   animation: cta-shimmer 3.5s ease-in-out infinite;
 }
@@ -303,7 +273,7 @@
 /* ── Footer ── */
 .lp-footer-text {
   font-size: 0.73rem;
-  color: #2e4a65;
+  color: #94a3b8;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
