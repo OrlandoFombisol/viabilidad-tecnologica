@@ -9,6 +9,14 @@
   overflow: hidden;
   z-index: 9999;
   font-family: 'Inter', sans-serif;
+  opacity: 1;
+}
+.lp-root--in {
+  animation: lp-fadein 0.9s ease-out both;
+}
+@keyframes lp-fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ── Background layer ── */

@@ -44,16 +44,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
 
   return (
     <motion.div
-      className="lp-root"
-      initial={{ opacity: 0 }}
-      animate={exiting
-        ? { opacity: 0, scale: 0.96, filter: 'blur(14px)' }
-        : { opacity: 1, scale: 1, filter: 'blur(0px)' }
-      }
-      transition={exiting
-        ? { duration: 0.55, ease: [0.4, 0, 1, 1] }
-        : { duration: 1, ease: 'easeOut' }
-      }
+      className={`lp-root${exiting ? '' : ' lp-root--in'}`}
+      animate={exiting ? { opacity: 0, scale: 0.96, filter: 'blur(14px)' } : {}}
+      transition={exiting ? { duration: 0.55, ease: [0.4, 0, 1, 1] } : {}}
+      style={exiting ? {} : undefined}
       onAnimationComplete={() => { if (exiting) onEnter(); }}
     >
       {/* Orbs */}
