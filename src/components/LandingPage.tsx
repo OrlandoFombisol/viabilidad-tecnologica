@@ -77,7 +77,7 @@ const LandingPage: React.FC<{ onEnter: () => void }> = ({ onEnter }) => {
         {/* Badge */}
         <motion.div className="lp-badge" variants={rise}>
           <span className="lp-badge-dot" />
-          <span>Sistema Interno · Jefatura de Tecnología de la Información</span>
+          <span>Sistema Interno · Departamento de Tecnología de la Información</span>
           <span className="lp-badge-shimmer" aria-hidden="true" />
         </motion.div>
 
@@ -108,7 +108,7 @@ const LandingPage: React.FC<{ onEnter: () => void }> = ({ onEnter }) => {
         {/* Subtítulo */}
         <motion.p className="lp-subtitle" variants={rise}>
           Revisión y aprobación gerencial de necesidades tecnológicas
-          consolidadas por la Jefatura de Tecnología de la Información.
+          consolidadas por el Departamento de Tecnología de la Información.
         </motion.p>
 
         {/* Stats */}

@@ -109,7 +109,7 @@ const technicalItems: TechItem[] = [
 ].map(([elemento, cantidad, categoria, prioridad], index) => ({
   id: `ti-${index + 1}`,
   area: 'Tecnología',
-  solicitante: 'Jefatura de Tecnología',
+  solicitante: 'Departamento de Tecnología',
   elemento: elemento as string,
   cantidadSolicitada: cantidad as number,
   categoria: categoria as string,

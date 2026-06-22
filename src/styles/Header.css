@@ -125,8 +125,39 @@
   color: #fff;
 }
 
+.app-header--collapsed {
+  padding: 12px 36px;
+  align-items: center;
+}
+
+.header-collapse-btn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.2);
+  color: rgba(255,255,255,.85);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.header-collapse-btn:hover {
+  background: rgba(255,255,255,.25);
+  color: #fff;
+}
+
+.app-header { position: relative; }
+
 @media (max-width: 900px) {
   .app-header { padding: 20px 20px; flex-direction: column; gap: 20px; }
+  .app-header--collapsed { padding: 10px 20px; }
   .header-main-title { font-size: 1.2rem; }
   .header-meta { gap: 16px; }
 }

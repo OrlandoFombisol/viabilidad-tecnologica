@@ -40,7 +40,7 @@ function createDetailSheet(items: TechItem[], title: string, subtitle: string): 
     [title],
     [subtitle],
     [`Fecha de generación: ${date}`],
-    ['Responsable: Jefatura de Tecnología'],
+    ['Responsable: Departamento de Tecnología'],
     [],
     columns.map((column) => column.label),
     ...rows,

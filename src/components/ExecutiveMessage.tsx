@@ -8,7 +8,7 @@ const ExecutiveMessage: React.FC = () => (
       <h2 className="exec-title">Decisión solicitada a Gerencia</h2>
       <p className="exec-lead">
         Como resultado del levantamiento realizado con las áreas y de la evaluación técnica de las
-        necesidades reportadas, la Jefatura de Tecnología presenta las solicitudes que considera
+        necesidades reportadas, el Departamento de Tecnología presenta las solicitudes que considera
         pertinentes para mantener la continuidad, capacidad y condiciones adecuadas de operación.
       </p>
       <p className="exec-body">
