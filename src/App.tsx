@@ -43,7 +43,7 @@ function LoadingScreen() {
 function App() {
   const [passed, setPassed] = useState(false);
 
-  const { user, role, loading: authLoading, signOut } = useAuth();
+  const { role, loading: authLoading, signOut } = useAuth();
   const {
     items,
     syncStatus,
@@ -53,7 +53,7 @@ function App() {
     approveAll,
     resetAll,
     manualSave,
-  } = useRequisicion(user?.email);
+  } = useRequisicion(role ?? undefined);
 
   // Pantalla inicial animada — siempre se muestra primero
   if (!passed) {
@@ -63,8 +63,8 @@ function App() {
   // Auth cargando
   if (authLoading) return <LoadingScreen />;
 
-  // No autenticado o sin perfil asignado
-  if (!user || role === null) return <LoginPage />;
+  // No autenticado
+  if (role === null) return <LoginPage />;
 
   const reportStatus = deriveReportStatus(items);
   const readOnly = role === 'tecnologia';
@@ -74,7 +74,7 @@ function App() {
       <Header
         reportStatus={reportStatus}
         reportDate={reportDate}
-        userEmail={user.email ?? undefined}
+        userEmail={role ?? undefined}
         userRole={role}
         onSignOut={() => void signOut()}
       />

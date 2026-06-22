@@ -1,19 +1,16 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import type { Session, User } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 
 export type UserRole = 'gerencia' | 'tecnologia';
 
-/** Emails internos fijos para cada rol — no necesitan ser cuentas reales de correo */
-export const ROLE_EMAILS: Record<UserRole, string> = {
-  gerencia:   'gerencia@sistema.interno',
-  tecnologia: 'tecnologia@sistema.interno',
+const CREDENTIALS: Record<UserRole, string> = {
+  gerencia: 'Fombisol2026',
+  tecnologia: '123456',
 };
 
+const STORAGE_KEY = 'vt_auth_role';
+
 interface AuthContextValue {
-  session: Session | null;
-  user: User | null;
   role: UserRole | null;
   loading: boolean;
   signIn: (role: UserRole, password: string) => Promise<{ error: Error | null }>;
@@ -23,56 +20,29 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [role, setRole] = useState<UserRole | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<UserRole | null>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved === 'gerencia' || saved === 'tecnologia' ? saved : null;
+    } catch { return null; }
+  });
 
-  const fetchRole = useCallback(async (userId: string) => {
-    const { data } = await supabase
-      .from('perfiles')
-      .select('rol')
-      .eq('id', userId)
-      .single();
-    const row = data as { rol?: string } | null;
-    setRole((row?.rol as UserRole) ?? null);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session) {
-        void fetchRole(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session) {
-        void fetchRole(session.user.id);
-      } else {
-        setRole(null);
-        setLoading(false);
-      }
-    });
-
-    return () => { subscription.unsubscribe(); };
-  }, [fetchRole]);
-
-  const signIn = useCallback(async (selectedRole: UserRole, password: string) => {
-    const email = ROLE_EMAILS[selectedRole];
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error as Error | null };
+  const signIn = useCallback(async (selectedRole: UserRole, password: string): Promise<{ error: Error | null }> => {
+    if (password === CREDENTIALS[selectedRole]) {
+      localStorage.setItem(STORAGE_KEY, selectedRole);
+      setRole(selectedRole);
+      return { error: null };
+    }
+    return { error: new Error('Contraseña incorrecta. Intenta de nuevo.') };
   }, []);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    localStorage.removeItem(STORAGE_KEY);
+    setRole(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ session, user: session?.user ?? null, role, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ role, loading: false, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

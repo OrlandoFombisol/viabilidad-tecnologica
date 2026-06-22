@@ -29,37 +29,12 @@ const ROLE_META: Record<UserRole, { label: string; desc: string; icon: React.Rea
 };
 
 const LoginPage: React.FC = () => {
-  const { signIn, signOut, user, role } = useAuth();
+  const { signIn } = useAuth();
   const [selectedRole, setSelectedRole] = useState<UserRole>('gerencia');
   const [password, setPassword] = useState('');
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-
-  // Usuario autenticado pero sin perfil asignado
-  if (user && role === null) {
-    return (
-      <div className="login-page">
-        <div className="login-card">
-          <div className="login-logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="28" height="28">
-              <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" />
-            </svg>
-          </div>
-          <h1 className="login-title">Acceso no configurado</h1>
-          <div className="login-no-access">
-            <p>
-              La cuenta <strong>{user.email}</strong> no tiene un perfil asignado.
-              Contacta al administrador del sistema.
-            </p>
-            <button className="login-btn" style={{ marginTop: 8 }} onClick={() => void signOut()}>
-              Cerrar sesión
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,14 +44,7 @@ const LoginPage: React.FC = () => {
     const { error } = await signIn(selectedRole, password);
     setLoading(false);
     if (error) {
-      const msg = error.message ?? '';
-      if (msg.includes('fetch') || msg.includes('network') || msg.includes('Failed') || msg.includes('NetworkError')) {
-        setErrorMsg('Sin conexión con el servidor. Verifica las credenciales de Supabase.');
-      } else if (msg.includes('Invalid login') || msg.includes('invalid') || msg.includes('credentials')) {
-        setErrorMsg('Contraseña incorrecta. Intenta de nuevo.');
-      } else {
-        setErrorMsg(`Error: ${msg || 'Intenta de nuevo.'}`);
-      }
+      setErrorMsg(error.message || 'Error al ingresar. Intenta de nuevo.');
       setPassword('');
     }
   };
