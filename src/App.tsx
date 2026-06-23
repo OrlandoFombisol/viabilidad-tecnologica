@@ -57,17 +57,18 @@ function App() {
     renameSolicitante,
     approveAll,
     resetAll,
+    clearAll,
     manualSave,
   } = useRequisicion(role ?? undefined);
 
   const { revisiones, addRevision, updateRevision } = useRevisiones();
 
-  // Guarda snapshot y restaura tabla a datos iniciales (nunca deja la tabla en blanco)
+  // Guarda snapshot y limpia tabla — las áreas base siempre se muestran en GridView
   const handleCloseRevision = useCallback(() => {
     if (items.length === 0) return;
     addRevision(items);
-    void resetAll();
-  }, [items, addRevision, resetAll]);
+    void clearAll();
+  }, [items, addRevision, clearAll]);
 
   if (!passed) return <LandingPage onEnter={() => setPassed(true)} />;
   if (authLoading) return <LoadingScreen />;

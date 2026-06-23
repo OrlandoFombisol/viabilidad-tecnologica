@@ -114,6 +114,19 @@
 }
 .gv-cell-val { font-weight: 700; font-size: 0.82rem; }
 
+/* Fila área vacía — sin solicitudes aún */
+.gv-area-empty-row {
+  padding: 10px 20px;
+  font-size: .72rem;
+  color: var(--color-primary-bright);
+  font-style: italic;
+  background: #F7FBFF;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  cursor: default;
+  opacity: .7;
+}
+
 /* Sin ítem (gris muy suave) */
 .gv-empty { background: #F7F9FB; color: #B8C5D3; font-size: 0.72rem; font-weight: 400; }
 

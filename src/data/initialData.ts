@@ -120,3 +120,10 @@ const technicalItems: TechItem[] = [
 }));
 
 export const initialItems: TechItem[] = [...userItems, ...technicalItems];
+
+// Áreas fijas de la empresa — siempre visibles en la tabla aunque estén vacías
+export const PREDEFINED_AREAS: string[] = [
+  'Contabilidad', 'Gestión Humana', 'Planeación', 'Compras', 'Nómina',
+  'Archivo', 'PAE', 'Gastronomía', 'Cadena de Suministros', 'Jurídico',
+  'Contratación', 'Control Interno', 'Tecnología',
+];

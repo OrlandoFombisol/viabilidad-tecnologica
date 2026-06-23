@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import type { ApprovalStatus, TechItem } from '../types';
+import { PREDEFINED_AREAS } from '../data/initialData';
 import ItemFormModal from './ItemFormModal';
 import '../styles/GridView.css';
 
@@ -50,7 +51,10 @@ const GridView: React.FC<GridViewProps> = ({
 }) => {
   // ── Ordering (persisted) ──
   const [columnOrder, setColumnOrder] = useState<string[]>(() => loadOrder(COL_ORDER_KEY));
-  const [areaOrder,   setAreaOrder]   = useState<string[]>(() => loadOrder(AREA_ORDER_KEY));
+  const [areaOrder,   setAreaOrder]   = useState<string[]>(() => {
+    const saved = loadOrder(AREA_ORDER_KEY);
+    return saved.length > 0 ? saved : [...PREDEFINED_AREAS];
+  });
 
   // ── Drag state — columns ──
   const [dragCol,     setDragCol]     = useState<string | null>(null);
@@ -64,7 +68,7 @@ const GridView: React.FC<GridViewProps> = ({
   const [popup,         setPopup]         = useState<PopupPos | null>(null);
   const [localComment,  setLocalComment]  = useState('');
   const [addModal,      setAddModal]      = useState<{ area: string; solicitante: string; elemento: string } | null>(null);
-  const [collapsedAreas, setCollapsedAreas] = useState<Set<string>>(() => new Set(items.map(i => i.area)));
+  const [collapsedAreas, setCollapsedAreas] = useState<Set<string>>(() => new Set(PREDEFINED_AREAS));
   const [pendingDelete,  setPendingDelete]  = useState<Set<string>>(new Set());
   const [editingArea,    setEditingArea]    = useState<{ area: string; value: string } | null>(null);
   const [editingPerson,  setEditingPerson]  = useState<{ area: string; person: string; value: string } | null>(null);
@@ -91,9 +95,12 @@ const GridView: React.FC<GridViewProps> = ({
       userRows: Array.from(um.entries()).map(([solicitante, byEl]) => ({ solicitante, byEl })),
     }));
     const groupMap  = new Map(allGroups.map(g => [g.area, g]));
-    const savedAreas = areaOrder.filter(a => groupMap.has(a));
-    const newAreas   = allGroups.filter(g => !areaOrder.includes(g.area)).map(g => g.area);
-    const areaGroups = [...savedAreas, ...newAreas].map(a => groupMap.get(a)!).filter(Boolean);
+    const allAreaNames = new Set([...PREDEFINED_AREAS, ...Array.from(areaMap.keys())]);
+    const savedAreaNames = areaOrder.filter(a => allAreaNames.has(a));
+    const newAreaNames   = Array.from(allAreaNames).filter(a => !areaOrder.includes(a));
+    const areaGroups = [...savedAreaNames, ...newAreaNames].map(a =>
+      groupMap.get(a) ?? ({ area: a, userRows: [] } as AreaGroup)
+    );
 
     const totalsSolicitado = elementos.map(el =>
       items.filter(i => i.elemento === el).reduce((s, i) => s + i.cantidadSolicitada, 0));
@@ -278,7 +285,9 @@ const GridView: React.FC<GridViewProps> = ({
                         )}
 
                         <span className="gv-area-meta">
-                          {userRows.length} {userRows.length === 1 ? 'usuario' : 'usuarios'} · {areaItems.length} ítems
+                          {userRows.length > 0
+                            ? `${userRows.length} ${userRows.length === 1 ? 'usuario' : 'usuarios'} · ${areaItems.length} ítems`
+                            : 'Sin solicitudes'}
                         </span>
                         {reviewed > 0 && (
                           <span className="gv-area-badges">
@@ -293,6 +302,14 @@ const GridView: React.FC<GridViewProps> = ({
                       </button>
                     </td>
                   </tr>
+
+                  {!isCollapsed && userRows.length === 0 && (
+                    <tr>
+                      <td colSpan={colSpan} className="gv-area-empty-row">
+                        + Agregar primera solicitud en esta área
+                      </td>
+                    </tr>
+                  )}
 
                   {!isCollapsed && userRows.map(({ solicitante, byEl }) => (
                     <tr key={`${area}|||${solicitante}`}>

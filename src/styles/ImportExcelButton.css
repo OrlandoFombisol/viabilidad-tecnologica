@@ -1,32 +1,25 @@
 @import './variables.css';
 
-.ieb-section {
-  margin-top: 28px;
+/* ── Footer colapsable (igual estructura que RevisionesPanel) ── */
+.ieb-footer {
+  margin-top: 16px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  overflow: hidden;
+  box-shadow: 0 -4px 24px rgba(7,27,53,.10);
+}
+
+/* Panel expandido */
+.ieb-panel {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 20px 24px 20px;
-  box-shadow: var(--shadow-sm);
+  border-bottom: none;
+}
+
+.ieb-panel-inner {
+  padding: 20px 24px 18px;
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-.ieb-header {}
-
-.ieb-title-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-  color: var(--color-primary);
-}
-
-.ieb-title {
-  font-size: .82rem;
-  font-weight: 800;
-  color: var(--color-primary);
-  letter-spacing: -0.01em;
 }
 
 .ieb-desc {
@@ -37,7 +30,7 @@
 .ieb-desc strong { color: var(--color-primary); }
 .ieb-desc em { color: var(--color-text-secondary); font-style: normal; }
 
-/* Botones */
+/* Botones de acción */
 .ieb-actions {
   display: flex;
   flex-wrap: wrap;
@@ -45,9 +38,25 @@
   align-items: center;
 }
 
+.ieb-btn-import,
+.ieb-btn-sample {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: .75rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  font-family: var(--font-sans);
+  transition: background .15s, border-color .15s, transform .12s, box-shadow .15s;
+}
+
 .ieb-btn-import {
   background: var(--color-primary);
   color: #fff;
+  border-color: var(--color-primary);
   box-shadow: 0 2px 8px rgba(37,99,235,.28);
 }
 .ieb-btn-import:hover:not(:disabled) {
@@ -55,11 +64,12 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(37,99,235,.35);
 }
+.ieb-btn-import:disabled { opacity: .55; cursor: not-allowed; }
 
 .ieb-btn-sample {
   background: var(--color-surface-raised);
   color: var(--color-primary);
-  border: 1.5px solid var(--color-primary-light);
+  border-color: var(--color-primary-light);
 }
 .ieb-btn-sample:hover {
   background: #EEF3FA;
@@ -96,7 +106,6 @@
   flex-direction: column;
   gap: 7px;
 }
-
 .ieb-ex-label {
   font-size: .62rem;
   font-weight: 800;
@@ -104,16 +113,13 @@
   letter-spacing: .07em;
   color: var(--color-text-muted);
 }
-
 .ieb-ex-scroll { overflow-x: auto; }
-
 .ieb-ex-table {
   border-collapse: collapse;
   font-size: .7rem;
   min-width: 600px;
   width: 100%;
 }
-
 .ieb-ex-table th {
   background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
   color: rgba(255,255,255,.9);
@@ -124,24 +130,56 @@
   white-space: nowrap;
   letter-spacing: .02em;
 }
-
 .ieb-ex-table td {
   border: 1px solid var(--color-border);
   padding: 6px 10px;
   color: var(--color-text-secondary);
   white-space: nowrap;
 }
-
 .ieb-ex-table tbody tr:nth-child(even) { background: #F7FAFC; }
-
 .ieb-ex-note {
   font-size: .63rem;
   color: var(--color-text-muted);
   line-height: 1.5;
 }
 
+/* ── Barra inferior permanente (idéntica a rp-bar) ── */
+.ieb-bar {
+  background: linear-gradient(120deg, var(--color-primary-dark) 0%, var(--color-primary) 60%, var(--color-primary-light) 100%);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: filter .15s;
+}
+.ieb-bar:hover { filter: brightness(1.06); }
+
+.ieb-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #fff;
+}
+.ieb-bar-title {
+  font-size: .82rem;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.ieb-chevron {
+  color: rgba(255,255,255,.75);
+  transition: transform .25s ease, color .15s;
+  flex-shrink: 0;
+}
+.ieb-chevron-up { transform: rotate(180deg); }
+.ieb-bar:hover .ieb-chevron { color: #fff; }
+
 @media (max-width: 600px) {
-  .ieb-section { padding: 16px 16px; }
-  .ieb-actions { flex-direction: column; align-items: stretch; }
-  .ieb-actions .btn { justify-content: center; }
+  .ieb-bar { padding: 10px 14px; }
+  .ieb-panel-inner { padding: 14px 16px 12px; }
 }
