@@ -32,11 +32,12 @@ interface ItemFormModalProps {
   defaultSolicitante?: string;
   defaultElemento?: string;
   onSubmit: (data: Omit<TechItem, 'id' | 'estado' | 'cantidadAprobada' | 'comentarioGerencia'>) => void;
+  onDelete?: () => void;
   onClose: () => void;
 }
 
 const ItemFormModal: React.FC<ItemFormModalProps> = ({
-  mode, item, existingAreas, defaultArea, defaultSolicitante, defaultElemento, onSubmit, onClose,
+  mode, item, existingAreas, defaultArea, defaultSolicitante, defaultElemento, onSubmit, onDelete, onClose,
 }) => {
   const [form, setForm] = useState<FormData>(() => {
     if (mode === 'edit' && item) {
@@ -77,13 +78,17 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
     if (!form.elemento.trim())     e.elemento     = 'Obligatorio';
     if (!form.categoria.trim())    e.categoria    = 'Obligatorio';
     if (!form.justificacion.trim())e.justificacion= 'Obligatorio';
-    if (form.cantidadSolicitada < 1) e.cantidadSolicitada = 'Mínimo 1';
+    if (mode === 'add' && form.cantidadSolicitada < 1) e.cantidadSolicitada = 'Mínimo 1 para nueva solicitud';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
   const handleSubmit = (ev: React.FormEvent) => {
     ev.preventDefault();
+    if (mode === 'edit' && form.cantidadSolicitada === 0 && onDelete) {
+      onDelete();
+      return;
+    }
     if (!validate()) return;
     onSubmit({
       area: form.area.trim(),
@@ -95,6 +100,8 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
       justificacion: form.justificacion.trim(),
     });
   };
+
+  const willDelete = mode === 'edit' && form.cantidadSolicitada === 0;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -125,14 +132,18 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
                 list="ifm-areas-list"
                 value={form.area}
                 onChange={e => setField('area', e.target.value)}
-                placeholder="Ej: Contabilidad"
+                placeholder="Seleccione o escriba un área nueva"
                 className={errors.area ? 'has-error' : ''}
                 autoFocus
+                autoComplete="off"
               />
               <datalist id="ifm-areas-list">
                 {existingAreas.map(a => <option key={a} value={a} />)}
               </datalist>
-              {errors.area && <span className="ifm-error">{errors.area}</span>}
+              {errors.area
+                ? <span className="ifm-error">{errors.area}</span>
+                : <span className="ifm-hint">Seleccione una existente o escriba un nombre nuevo</span>
+              }
             </div>
             <div className="ifm-field">
               <label htmlFor="ifm-solicitante">Solicitante</label>
@@ -156,25 +167,30 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
                 list="ifm-elementos-list"
                 value={form.elemento}
                 onChange={e => handleElemento(e.target.value)}
-                placeholder="Seleccione o escriba"
+                placeholder="Seleccione o escriba un elemento nuevo"
                 className={errors.elemento ? 'has-error' : ''}
+                autoComplete="off"
               />
               <datalist id="ifm-elementos-list">
                 {ELEMENTOS_SUGERIDOS.map(el => <option key={el} value={el} />)}
               </datalist>
-              {errors.elemento && <span className="ifm-error">{errors.elemento}</span>}
+              {errors.elemento
+                ? <span className="ifm-error">{errors.elemento}</span>
+                : <span className="ifm-hint">Elija uno sugerido o escriba un elemento diferente</span>
+              }
             </div>
             <div className="ifm-field">
               <label htmlFor="ifm-cantidad">Cantidad solicitada</label>
               <input
                 id="ifm-cantidad"
                 type="number"
-                min={1}
+                min={0}
                 value={form.cantidadSolicitada}
-                onChange={e => setField('cantidadSolicitada', Math.max(1, parseInt(e.target.value) || 1))}
-                className={errors.cantidadSolicitada ? 'has-error' : ''}
+                onChange={e => setField('cantidadSolicitada', Math.max(0, parseInt(e.target.value) || 0))}
+                className={errors.cantidadSolicitada ? 'has-error' : willDelete ? 'ifm-zero-qty' : ''}
               />
               {errors.cantidadSolicitada && <span className="ifm-error">{errors.cantidadSolicitada}</span>}
+              {willDelete && <span className="ifm-zero-warning">Cantidad 0 — al confirmar, este ítem será eliminado.</span>}
             </div>
           </div>
 
@@ -221,8 +237,8 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
 
           <div className="ifm-actions">
             <button type="button" className="btn btn-outline" onClick={onClose}>Cancelar</button>
-            <button type="submit" className="btn btn-primary">
-              {mode === 'add' ? 'Agregar solicitud' : 'Guardar cambios'}
+            <button type="submit" className={`btn ${willDelete ? 'btn-danger' : 'btn-primary'}`}>
+              {mode === 'add' ? 'Agregar solicitud' : willDelete ? 'Eliminar ítem' : 'Guardar cambios'}
             </button>
           </div>
         </form>

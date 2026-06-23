@@ -2,7 +2,6 @@ import { useState } from 'react';
 import type { ReportStatus } from './types';
 import { useAuth } from './contexts/AuthContext';
 import { useRequisicion } from './hooks/useRequisicion';
-import { useTheme } from './hooks/useTheme';
 import Header from './components/Header';
 import ExecutiveMessage from './components/ExecutiveMessage';
 import SummaryCards from './components/SummaryCards';
@@ -43,7 +42,6 @@ function LoadingScreen() {
 
 function App() {
   const [passed, setPassed] = useState(false);
-  const { theme, toggle: toggleTheme } = useTheme();
 
   const { role, loading: authLoading, signOut } = useAuth();
   const {
@@ -81,8 +79,6 @@ function App() {
         userEmail={role ?? undefined}
         userRole={role}
         onSignOut={() => void signOut()}
-        darkMode={theme === 'dark'}
-        onToggleDark={toggleTheme}
       />
       <ExecutiveMessage />
       <ProgressSummary items={items} />

@@ -107,6 +107,45 @@
   margin-top: 2px;
 }
 
+/* Hint de campo */
+.ifm-hint {
+  display: block;
+  font-size: .68rem;
+  color: var(--color-text-muted);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+/* Cantidad cero — advertencia de eliminación */
+.ifm-zero-qty {
+  border-color: var(--color-denied) !important;
+  background: var(--color-denied-bg) !important;
+}
+.ifm-zero-warning {
+  display: block;
+  font-size: .72rem;
+  color: var(--color-denied);
+  background: var(--color-denied-bg);
+  border: 1px solid var(--color-denied-border);
+  border-radius: var(--radius-sm);
+  padding: 5px 9px;
+  margin-top: 5px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Botón eliminar (peligro) */
+.btn-danger {
+  background: var(--color-denied);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(220,38,38,.28);
+}
+.btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+  box-shadow: 0 4px 14px rgba(220,38,38,.38);
+  transform: translateY(-1px);
+}
+
 @media (max-width: 560px) {
   .ifm-row-2 { grid-template-columns: 1fr; }
   .ifm-body  { padding: 16px 18px 20px; }

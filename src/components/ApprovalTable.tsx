@@ -513,6 +513,7 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
           existingAreas={areas}
           defaultArea={modal.mode === 'add' ? modal.defaultArea : undefined}
           onSubmit={handleModalSubmit}
+          onDelete={modal.mode === 'edit' ? () => { onDeleteItem(modal.item.id); setModal(null); } : undefined}
           onClose={() => setModal(null)}
         />
       )}
