@@ -163,7 +163,9 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
         </div>
       </div>
 
-      {viewMode === 'cuadricula' && <GridView items={items} />}
+      {viewMode === 'cuadricula' && (
+        <GridView items={items} readOnly={readOnly} onUpdateItem={onUpdateItem} />
+      )}
 
       <div className="area-list" style={{ display: viewMode === 'lista' ? undefined : 'none' }}>
         {visibleAreas.map((area) => {
