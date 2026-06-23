@@ -361,6 +361,60 @@
   to   { box-shadow: 0 0 0 4px rgba(220,38,38,.0); }
 }
 
+/* ── Drag & drop — columnas ── */
+.gv-th-draggable {
+  cursor: grab;
+  user-select: none;
+  transition: background 0.15s, opacity 0.15s, outline 0.12s;
+}
+.gv-th-draggable:active { cursor: grabbing; }
+.gv-th-grip {
+  display: inline-block;
+  font-size: .62rem;
+  opacity: .35;
+  margin-right: 4px;
+  vertical-align: middle;
+  letter-spacing: -.05em;
+  line-height: 1;
+}
+.gv-col-dragging {
+  opacity: .38;
+  background: var(--color-primary-dark) !important;
+}
+.gv-col-drag-over {
+  background: rgba(255,255,255,.25) !important;
+  outline: 2px dashed rgba(255,255,255,.6);
+  outline-offset: -3px;
+}
+
+/* ── Drag & drop — filas de área ── */
+.gv-area-group-row { cursor: default; }
+.gv-area-drag-grip {
+  font-size: .65rem;
+  opacity: .30;
+  flex-shrink: 0;
+  margin-right: -2px;
+  line-height: 1;
+  letter-spacing: -.05em;
+  cursor: grab;
+}
+.gv-area-group-row[draggable]:hover .gv-area-drag-grip { opacity: .60; }
+.gv-row-dragging { opacity: .40; }
+.gv-row-drag-over .gv-area-group-cell {
+  border-top: 3px dashed var(--color-primary-bright) !important;
+}
+
+/* ── Pista de drag ── */
+.gv-drag-hint {
+  font-size: .68rem;
+  color: var(--color-text-muted);
+  margin: 0 0 6px 2px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  opacity: .75;
+}
+
 @media (max-width: 640px) {
   .gv-col-area { min-width: 100px; }
   .gv-col-user { min-width: 110px; }
