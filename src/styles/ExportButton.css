@@ -15,6 +15,28 @@
   box-shadow: 0 -4px 20px rgba(0,0,0,.10);
   margin-top: 40px;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  transition: padding 0.2s ease;
+}
+
+/* Toggle button — hidden on desktop, visible on mobile */
+.export-bar-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--transition), color var(--transition);
+}
+.export-bar-toggle:hover {
+  background: var(--color-accent-light);
+  color: var(--color-primary-bright);
+  border-color: var(--color-primary-bright);
 }
 
 .export-bar-left { flex: 1; }
@@ -122,8 +144,20 @@
 .toast-error   { background: var(--color-denied);   color: #fff; }
 
 @media (max-width: 640px) {
-  .export-bar { flex-direction: column; align-items: stretch; gap: 12px; }
-  .export-bar-actions { flex-direction: column; }
+  .export-bar { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding: 12px 16px; }
+  .export-bar-toggle { display: flex; }
+
+  .export-bar--collapsed .export-bar-left,
+  .export-bar--collapsed .export-bar-actions { display: none; }
+  .export-bar--collapsed { padding: 10px 16px; }
+
+  .export-bar:not(.export-bar--collapsed) {
+    flex-wrap: wrap;
+    padding: 14px 16px;
+  }
+  .export-bar:not(.export-bar--collapsed) .export-bar-left { flex: 1 1 100%; }
+  .export-bar:not(.export-bar--collapsed) .export-bar-actions { flex: 1 1 100%; flex-direction: column; }
+
   .modal-box { padding: 28px 20px; }
   .toast { left: 16px; right: 16px; bottom: 80px; }
 }

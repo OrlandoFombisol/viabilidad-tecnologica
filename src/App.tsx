@@ -67,7 +67,7 @@ function App() {
   if (role === null) return <LoginPage />;
 
   const reportStatus = deriveReportStatus(items);
-  const readOnly = role === 'tecnologia';
+  const canApprove = role === 'gerencia';
 
   return (
     <div className="app-wrapper">
@@ -82,7 +82,7 @@ function App() {
       <ProgressSummary items={items} />
       <ApprovalTable
         items={items}
-        readOnly={readOnly}
+        canApprove={canApprove}
         onUpdateItem={updateItem}
         onAddItem={addItem}
         onDeleteItem={deleteItem}

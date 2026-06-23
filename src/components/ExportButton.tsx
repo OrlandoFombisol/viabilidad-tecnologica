@@ -16,6 +16,7 @@ interface ExportButtonProps {
 const ExportButton: React.FC<ExportButtonProps> = ({ items, syncStatus, role, onSave }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
 
   const approvedCount = items.filter(
     (i) => i.estado === 'Aprobado' || i.estado === 'Aprobado parcial'
@@ -39,7 +40,17 @@ const ExportButton: React.FC<ExportButtonProps> = ({ items, syncStatus, role, on
 
   return (
     <>
-      <div className="export-bar">
+      <div className={`export-bar${collapsed ? ' export-bar--collapsed' : ''}`}>
+        <button
+          className="export-bar-toggle"
+          onClick={() => setCollapsed(c => !c)}
+          aria-label={collapsed ? 'Expandir' : 'Contraer'}
+          title={collapsed ? 'Expandir barra' : 'Contraer barra'}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14">
+            <path d={collapsed ? 'M6 9l6 6 6-6' : 'M18 15l-6-6-6 6'} />
+          </svg>
+        </button>
         <div className="export-bar-left">
           <div className="export-status-text">
             {approvedCount > 0 ? (

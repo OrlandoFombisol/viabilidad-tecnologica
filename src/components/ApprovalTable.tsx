@@ -7,7 +7,7 @@ import '../styles/ApprovalTable.css';
 
 interface ApprovalTableProps {
   items: TechItem[];
-  readOnly: boolean;
+  canApprove: boolean;
   onUpdateItem: (id: string, changes: Partial<TechItem>) => void;
   onAddItem:    (data: Omit<TechItem, 'id' | 'estado' | 'cantidadAprobada' | 'comentarioGerencia'>) => void;
   onDeleteItem: (id: string) => void;
@@ -40,7 +40,7 @@ const panelVariants = {
 };
 
 const ApprovalTable: React.FC<ApprovalTableProps> = ({
-  items, readOnly, onUpdateItem, onAddItem, onDeleteItem, onApproveAll, onResetAll,
+  items, canApprove, onUpdateItem, onAddItem, onDeleteItem, onApproveAll, onResetAll,
 }) => {
   const areas = useMemo(() => Array.from(new Set(items.map((item) => item.area))), [items]);
   const [openAreas, setOpenAreas]       = useState<Set<string>>(() => new Set(areas.slice(0, 1)));
@@ -51,6 +51,11 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
   const [viewMode, setViewMode]         = useState<'lista' | 'cuadricula'>('cuadricula');
 
   const normalizedQuery = query.trim().toLocaleLowerCase('es');
+  const filteredItems = normalizedQuery
+    ? items.filter(item =>
+        `${item.area} ${item.solicitante} ${item.elemento}`.toLocaleLowerCase('es').includes(normalizedQuery)
+      )
+    : items;
   const visibleAreas = areas.filter((area) => {
     if (!normalizedQuery) return true;
     return items.some((item) => item.area === area &&
@@ -122,7 +127,7 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
           <p className="section-subtitle">Abra un área y registre la decisión para cada necesidad evaluada por Tecnología.</p>
         </div>
         <div className="table-actions">
-          {!readOnly && (
+          {canApprove && (
             <>
               <button className="btn btn-secondary" onClick={reset}>
                 {confirmReset ? 'Confirmar limpieza' : 'Limpiar revisión'}
@@ -184,7 +189,7 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
 
       {/* ── Grid view ── */}
       {viewMode === 'cuadricula' && (
-        <GridView items={items} readOnly={readOnly} onUpdateItem={onUpdateItem} />
+        <GridView items={filteredItems} canApprove={canApprove} onUpdateItem={onUpdateItem} onAddItem={onAddItem} existingAreas={areas} />
       )}
 
       {/* ── Lista view with Framer Motion ── */}
@@ -326,7 +331,6 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
                                       <small>Solicita</small>
                                       <strong>{item.cantidadSolicitada}</strong>
                                     </span>
-                                    {!readOnly && (
                                       <span className="item-tools">
                                         <button
                                           className="item-tool-btn edit-tool"
@@ -352,11 +356,10 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
                                           )}
                                         </button>
                                       </span>
-                                    )}
                                   </span>
                                 </div>
 
-                                {!readOnly && (
+                                {canApprove && (
                                   <div className="decision-buttons" aria-label={`Decisión para ${item.elemento}`}>
                                     {(['Aprobado', 'Aprobado parcial', 'Negado'] as ApprovalStatus[]).map((status) => (
                                       <motion.button
@@ -380,7 +383,7 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
                                       min={0}
                                       max={item.cantidadSolicitada}
                                       value={item.cantidadAprobada}
-                                      disabled={readOnly || item.estado === 'Pendiente' || item.estado === 'Negado'}
+                                      disabled={!canApprove || item.estado === 'Pendiente' || item.estado === 'Negado'}
                                       onChange={(e) => changeQuantity(item, e.target.value)}
                                     />
                                   </label>
@@ -388,8 +391,8 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
                                     className="comment-input"
                                     value={item.comentarioGerencia}
                                     onChange={(e) => onUpdateItem(item.id, { comentarioGerencia: e.target.value })}
-                                    placeholder={readOnly ? '(sin comentario)' : 'Comentario opcional'}
-                                    disabled={readOnly}
+                                    placeholder={!canApprove ? '(sin comentario)' : 'Comentario opcional'}
+                                    disabled={!canApprove}
                                     aria-label={`Comentario para ${item.elemento}`}
                                   />
                                 </div>

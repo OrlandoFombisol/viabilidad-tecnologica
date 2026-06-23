@@ -29,18 +29,30 @@ interface ItemFormModalProps {
   item?: TechItem;
   existingAreas: string[];
   defaultArea?: string;
+  defaultSolicitante?: string;
+  defaultElemento?: string;
   onSubmit: (data: Omit<TechItem, 'id' | 'estado' | 'cantidadAprobada' | 'comentarioGerencia'>) => void;
   onClose: () => void;
 }
 
 const ItemFormModal: React.FC<ItemFormModalProps> = ({
-  mode, item, existingAreas, defaultArea, onSubmit, onClose,
+  mode, item, existingAreas, defaultArea, defaultSolicitante, defaultElemento, onSubmit, onClose,
 }) => {
-  const [form, setForm] = useState<FormData>(() =>
-    mode === 'edit' && item
-      ? { area: item.area, solicitante: item.solicitante, elemento: item.elemento, categoria: item.categoria, prioridad: item.prioridad, cantidadSolicitada: item.cantidadSolicitada, justificacion: item.justificacion }
-      : { area: defaultArea ?? '', solicitante: '', elemento: '', categoria: '', prioridad: 'Media', cantidadSolicitada: 1, justificacion: '' }
-  );
+  const [form, setForm] = useState<FormData>(() => {
+    if (mode === 'edit' && item) {
+      return { area: item.area, solicitante: item.solicitante, elemento: item.elemento, categoria: item.categoria, prioridad: item.prioridad, cantidadSolicitada: item.cantidadSolicitada, justificacion: item.justificacion };
+    }
+    const tpl = defaultElemento ? ELEMENTO_TEMPLATES[defaultElemento] : null;
+    return {
+      area: defaultArea ?? '',
+      solicitante: defaultSolicitante ?? '',
+      elemento: defaultElemento ?? '',
+      categoria: tpl?.categoria ?? '',
+      prioridad: (tpl?.prioridad ?? 'Media') as Priority,
+      cantidadSolicitada: 1,
+      justificacion: tpl?.justificacion ?? '',
+    };
+  });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
 
   const setField = <K extends keyof FormData>(key: K, value: FormData[K]) => {

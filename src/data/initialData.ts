@@ -99,7 +99,6 @@ const userItems: TechItem[] = sourceRequests.flatMap((request, requestIndex) =>
 );
 
 const technicalItems: TechItem[] = [
-  ['Pilas AA alcalinas', 250, 'Insumos operativos', 'Media'],
   ['Mouse ergonómico', 8, 'Ergonomía', 'Media'],
   ['Drum Brother', 8, 'Continuidad operativa', 'Alta'],
   ['Disco duro SSD 2TB', 3, 'Almacenamiento y respaldo', 'Alta'],
@@ -107,7 +106,7 @@ const technicalItems: TechItem[] = [
   ['Disco SSD SATA 480GB', 2, 'Mantenimiento de equipos', 'Alta'],
   ['Disco HDD 2TB', 2, 'Almacenamiento y respaldo', 'Media'],
 ].map(([elemento, cantidad, categoria, prioridad], index) => ({
-  id: `ti-${index + 1}`,
+  id: `ti-${index + 2}`,
   area: 'Tecnología',
   solicitante: 'Departamento de Tecnología',
   elemento: elemento as string,

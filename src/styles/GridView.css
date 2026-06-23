@@ -117,6 +117,15 @@
 /* Sin ítem (gris muy suave) */
 .gv-empty { background: #F7F9FB; color: #B8C5D3; font-size: 0.72rem; font-weight: 400; }
 
+.gv-empty-add {
+  font-size: 1rem;
+  color: var(--color-primary-bright);
+  opacity: 0.35;
+  transition: opacity 0.15s;
+  line-height: 1;
+}
+.gv-empty:hover .gv-empty-add { opacity: 0.75; }
+
 /* Con ítem — color según estado de decisión */
 .gv-has-item { position: relative; }
 

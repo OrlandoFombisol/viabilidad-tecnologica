@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import type { ApprovalStatus, TechItem } from '../types';
+import ItemFormModal from './ItemFormModal';
 import '../styles/GridView.css';
 
 const SHORT: Record<string, string> = {
@@ -25,8 +26,10 @@ const ESTADO_CLASS: Record<ApprovalStatus, string> = {
 
 interface GridViewProps {
   items: TechItem[];
-  readOnly: boolean;
+  canApprove: boolean;
   onUpdateItem: (id: string, changes: Partial<TechItem>) => void;
+  onAddItem: (data: Omit<TechItem, 'id' | 'estado' | 'cantidadAprobada' | 'comentarioGerencia'>) => void;
+  existingAreas: string[];
 }
 
 interface PopupPos { itemId: string; top: number; left: number; }
@@ -36,9 +39,10 @@ interface AreaGroup {
   userRows: Array<{ solicitante: string; byEl: Map<string, TechItem> }>;
 }
 
-const GridView: React.FC<GridViewProps> = ({ items, readOnly, onUpdateItem }) => {
+const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, onAddItem, existingAreas }) => {
   const [popup, setPopup] = useState<PopupPos | null>(null);
   const [localComment, setLocalComment] = useState('');
+  const [addModal, setAddModal] = useState<{ area: string; solicitante: string; elemento: string } | null>(null);
   const [collapsedAreas, setCollapsedAreas] = useState<Set<string>>(
     () => new Set(items.map(i => i.area))
   );
@@ -85,7 +89,7 @@ const GridView: React.FC<GridViewProps> = ({ items, readOnly, onUpdateItem }) =>
   };
 
   const openPopup = (item: TechItem, e: React.MouseEvent<HTMLTableCellElement>) => {
-    if (readOnly) return;
+    if (!canApprove) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const popupW = 265;
     const popupEstH = 230;
@@ -200,15 +204,24 @@ const GridView: React.FC<GridViewProps> = ({ items, readOnly, onUpdateItem }) =>
                       {elementos.map(el => {
                         const item = byEl.get(el);
                         if (!item) {
-                          return <td key={el} className="gv-td gv-cell-val gv-empty">—</td>;
+                          return (
+                            <td
+                              key={el}
+                              className="gv-td gv-cell-val gv-empty gv-clickable"
+                              title={`Agregar ${el} para ${solicitante}`}
+                              onClick={() => setAddModal({ area, solicitante, elemento: el })}
+                            >
+                              <span className="gv-empty-add">+</span>
+                            </td>
+                          );
                         }
                         const isActive = popup?.itemId === item.id;
                         return (
                           <td
                             key={el}
-                            className={`gv-td gv-cell-val gv-has-item ${ESTADO_CLASS[item.estado]}${!readOnly ? ' gv-clickable' : ''}${isActive ? ' gv-active-cell' : ''}`}
-                            title={!readOnly ? `${item.elemento} · ${item.estado} — clic para revisar` : item.estado}
-                            onClick={!readOnly ? (e) => openPopup(item, e) : undefined}
+                            className={`gv-td gv-cell-val gv-has-item ${ESTADO_CLASS[item.estado]}${canApprove ? ' gv-clickable' : ''}${isActive ? ' gv-active-cell' : ''}`}
+                            title={canApprove ? `${item.elemento} · ${item.estado} — clic para revisar` : item.estado}
+                            onClick={canApprove ? (e) => openPopup(item, e) : undefined}
                           >
                             <span className="gv-qty">{item.cantidadSolicitada}</span>
                             {item.estado !== 'Pendiente' && (
@@ -292,6 +305,21 @@ const GridView: React.FC<GridViewProps> = ({ items, readOnly, onUpdateItem }) =>
             />
           </label>
         </div>
+      )}
+
+      {addModal && (
+        <ItemFormModal
+          mode="add"
+          existingAreas={existingAreas}
+          defaultArea={addModal.area}
+          defaultSolicitante={addModal.solicitante}
+          defaultElemento={addModal.elemento}
+          onSubmit={(data) => {
+            onAddItem(data);
+            setAddModal(null);
+          }}
+          onClose={() => setAddModal(null)}
+        />
       )}
     </div>
   );
