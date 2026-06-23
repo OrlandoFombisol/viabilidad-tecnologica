@@ -6,8 +6,7 @@ import { initialItems } from '../data/initialData';
 
 type SolicitudInsert = Database['public']['Tables']['solicitudes']['Insert'];
 
-const STORAGE_KEY  = 'viabilidad_tecnologica_v2';
-const CLEARED_KEY  = 'vt_cleared';
+const STORAGE_KEY = 'viabilidad_tecnologica_v2';
 
 export type SyncStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'error';
 
@@ -142,12 +141,7 @@ export function useRequisicion(userEmail: string | null | undefined) {
       }
 
       if (!data || data.length === 0) {
-        // Tabla limpia intencionalmente tras cierre de revisión — no resembrar
-        if (localStorage.getItem(CLEARED_KEY)) {
-          if (!cancelled) { setItems([]); markSaved(); setDbReady(true); }
-          return;
-        }
-        // Primera ejecución: sembrar datos iniciales (idempotente)
+        // Supabase vacío: sembrar datos iniciales (idempotente)
         const rows = initialItems.map(i => itemToRow(i, null));
         const { error: seedErr } = await supabase
           .from('solicitudes')
@@ -301,7 +295,6 @@ export function useRequisicion(userEmail: string | null | undefined) {
     const ids = itemsRef.current.map(i => i.id);
     setItems([]);
     localStorage.removeItem(STORAGE_KEY);
-    localStorage.setItem(CLEARED_KEY, '1');
     if (ids.length === 0) { markSaved(); return; }
     setSyncStatus('saving');
     const { error } = await supabase.from('solicitudes').delete().in('id', ids);
