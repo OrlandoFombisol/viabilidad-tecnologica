@@ -3,17 +3,17 @@ import type { ApprovalStatus, TechItem } from '../types';
 import '../styles/GridView.css';
 
 const SHORT: Record<string, string> = {
-  'Teclado': 'teclado',
-  'Base para portátil': 'base',
-  'Mouse': 'mouse',
-  'Mousepad': 'mousepad',
-  'PC / Laptop': 'pc-laptop',
-  'Pantalla': 'pantalla',
-  'PC All in One': 'PC-AllinOne',
+  'Teclado': 'Teclado',
+  'Base para portátil': 'Base portátil',
+  'Mouse': 'Mouse',
+  'Mousepad': 'Mousepad',
+  'PC / Laptop': 'PC/Laptop',
+  'Pantalla': 'Pantalla',
+  'PC All in One': 'All-in-One',
 };
 
 function shorten(el: string) {
-  return SHORT[el] ?? el.slice(0, 10);
+  return SHORT[el] ?? el.slice(0, 12);
 }
 
 const ESTADO_CLASS: Record<ApprovalStatus, string> = {
@@ -31,31 +31,56 @@ interface GridViewProps {
 
 interface PopupPos { itemId: string; top: number; left: number; }
 
+interface AreaGroup {
+  area: string;
+  userRows: Array<{ solicitante: string; byEl: Map<string, TechItem> }>;
+}
+
 const GridView: React.FC<GridViewProps> = ({ items, readOnly, onUpdateItem }) => {
   const [popup, setPopup] = useState<PopupPos | null>(null);
   const [localComment, setLocalComment] = useState('');
+  const [collapsedAreas, setCollapsedAreas] = useState<Set<string>>(new Set());
   const popupRef = useRef<HTMLDivElement>(null);
 
-  const { elementos, rows, totals } = useMemo(() => {
+  const { elementos, areaGroups, totalsSolicitado, totalsAprobado } = useMemo(() => {
     const elementoSet = new Set<string>();
     items.forEach(i => elementoSet.add(i.elemento));
     const elementos = Array.from(elementoSet);
 
-    const map = new Map<string, { area: string; solicitante: string; byEl: Map<string, TechItem> }>();
+    // Group by area → user
+    const areaMap = new Map<string, Map<string, Map<string, TechItem>>>();
     items.forEach(item => {
-      const key = `${item.area}|||${item.solicitante}`;
-      if (!map.has(key)) map.set(key, { area: item.area, solicitante: item.solicitante, byEl: new Map() });
-      map.get(key)!.byEl.set(item.elemento, item);
+      if (!areaMap.has(item.area)) areaMap.set(item.area, new Map());
+      const userMap = areaMap.get(item.area)!;
+      if (!userMap.has(item.solicitante)) userMap.set(item.solicitante, new Map());
+      userMap.get(item.solicitante)!.set(item.elemento, item);
     });
 
-    const totals = elementos.map(el =>
+    const areaGroups: AreaGroup[] = Array.from(areaMap.entries()).map(([area, userMap]) => ({
+      area,
+      userRows: Array.from(userMap.entries()).map(([solicitante, byEl]) => ({ solicitante, byEl })),
+    }));
+
+    const totalsSolicitado = elementos.map(el =>
       items.filter(i => i.elemento === el).reduce((s, i) => s + i.cantidadSolicitada, 0)
     );
+    const totalsAprobado = elementos.map(el =>
+      items.filter(i => i.elemento === el).reduce((s, i) => s + (i.cantidadAprobada ?? 0), 0)
+    );
 
-    return { elementos, rows: Array.from(map.values()), totals };
+    return { elementos, areaGroups, totalsSolicitado, totalsAprobado };
   }, [items]);
 
   const activeItem = popup ? items.find(i => i.id === popup.itemId) ?? null : null;
+
+  const toggleArea = (area: string) => {
+    setCollapsedAreas(prev => {
+      const next = new Set(prev);
+      if (next.has(area)) next.delete(area);
+      else next.add(area);
+      return next;
+    });
+  };
 
   const openPopup = (item: TechItem, e: React.MouseEvent<HTMLTableCellElement>) => {
     if (readOnly) return;
@@ -112,6 +137,8 @@ const GridView: React.FC<GridViewProps> = ({ items, readOnly, onUpdateItem }) =>
     return () => document.removeEventListener('keydown', handler);
   });
 
+  const colSpan = 2 + elementos.length;
+
   return (
     <div className="grid-view-wrap">
       <div className="grid-view-scroll">
@@ -126,40 +153,87 @@ const GridView: React.FC<GridViewProps> = ({ items, readOnly, onUpdateItem }) =>
             </tr>
           </thead>
           <tbody>
-            {rows.map(({ area, solicitante, byEl }) => (
-              <tr key={`${area}|||${solicitante}`}>
-                <td className="gv-td gv-cell-area">{area}</td>
-                <td className="gv-td gv-cell-user">{solicitante}</td>
-                {elementos.map(el => {
-                  const item = byEl.get(el);
-                  if (!item) {
-                    return <td key={el} className="gv-td gv-cell-val gv-empty">—</td>;
-                  }
-                  const isActive = popup?.itemId === item.id;
-                  return (
-                    <td
-                      key={el}
-                      className={`gv-td gv-cell-val gv-has-item ${ESTADO_CLASS[item.estado]}${!readOnly ? ' gv-clickable' : ''}${isActive ? ' gv-active-cell' : ''}`}
-                      title={!readOnly ? `${item.elemento} · ${item.estado} — clic para revisar` : item.estado}
-                      onClick={!readOnly ? (e) => openPopup(item, e) : undefined}
-                    >
-                      <span className="gv-qty">{item.cantidadSolicitada}</span>
-                      {item.estado !== 'Pendiente' && (
-                        <span className="gv-status-icon">
-                          {item.estado === 'Aprobado' ? '✓' : item.estado === 'Negado' ? '✗' : '½'}
+            {areaGroups.map(({ area, userRows }) => {
+              const isCollapsed = collapsedAreas.has(area);
+              const areaItems = items.filter(i => i.area === area);
+              const reviewed  = areaItems.filter(i => i.estado !== 'Pendiente').length;
+              const aprobados = areaItems.filter(i => i.estado === 'Aprobado').length;
+              const parciales = areaItems.filter(i => i.estado === 'Aprobado parcial').length;
+              const negados   = areaItems.filter(i => i.estado === 'Negado').length;
+
+              return (
+                <React.Fragment key={area}>
+                  {/* Area group header */}
+                  <tr className="gv-area-group-row">
+                    <td colSpan={colSpan} className="gv-area-group-cell">
+                      <button
+                        className="gv-area-toggle"
+                        onClick={() => toggleArea(area)}
+                        aria-expanded={!isCollapsed}
+                      >
+                        <span className={`gv-area-chevron${isCollapsed ? ' collapsed' : ''}`}>▼</span>
+                        <strong>{area}</strong>
+                        <span className="gv-area-meta">
+                          {userRows.length} {userRows.length === 1 ? 'usuario' : 'usuarios'} · {areaItems.length} ítems
                         </span>
-                      )}
+                        {reviewed > 0 && (
+                          <span className="gv-area-badges">
+                            {aprobados > 0 && <span className="gv-badge gv-badge-apr">{aprobados} apr.</span>}
+                            {parciales > 0 && <span className="gv-badge gv-badge-parc">{parciales} parc.</span>}
+                            {negados   > 0 && <span className="gv-badge gv-badge-neg">{negados} neg.</span>}
+                          </span>
+                        )}
+                        <span className={`gv-area-progress${reviewed === areaItems.length ? ' complete' : ''}`}>
+                          {reviewed}/{areaItems.length}
+                        </span>
+                      </button>
                     </td>
-                  );
-                })}
-              </tr>
-            ))}
+                  </tr>
+
+                  {/* User rows */}
+                  {!isCollapsed && userRows.map(({ solicitante, byEl }) => (
+                    <tr key={`${area}|||${solicitante}`}>
+                      <td className="gv-td gv-cell-area">{area}</td>
+                      <td className="gv-td gv-cell-user">{solicitante}</td>
+                      {elementos.map(el => {
+                        const item = byEl.get(el);
+                        if (!item) {
+                          return <td key={el} className="gv-td gv-cell-val gv-empty">—</td>;
+                        }
+                        const isActive = popup?.itemId === item.id;
+                        return (
+                          <td
+                            key={el}
+                            className={`gv-td gv-cell-val gv-has-item ${ESTADO_CLASS[item.estado]}${!readOnly ? ' gv-clickable' : ''}${isActive ? ' gv-active-cell' : ''}`}
+                            title={!readOnly ? `${item.elemento} · ${item.estado} — clic para revisar` : item.estado}
+                            onClick={!readOnly ? (e) => openPopup(item, e) : undefined}
+                          >
+                            <span className="gv-qty">{item.cantidadSolicitada}</span>
+                            {item.estado !== 'Pendiente' && (
+                              <span className="gv-status-icon">
+                                {item.estado === 'Aprobado' ? '✓' : item.estado === 'Negado' ? '✗' : '½'}
+                              </span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </React.Fragment>
+              );
+            })}
           </tbody>
           <tfoot>
-            <tr className="gv-total-row">
-              <td className="gv-td" colSpan={2}>total</td>
-              {totals.map((t, i) => (
-                <td key={i} className="gv-td gv-cell-total">{t}</td>
+            <tr className="gv-total-row gv-total-sol">
+              <td className="gv-td gv-total-label" colSpan={2}>Solicitado</td>
+              {totalsSolicitado.map((t, i) => (
+                <td key={i} className="gv-td gv-cell-total-sol">{t}</td>
+              ))}
+            </tr>
+            <tr className="gv-total-row gv-total-apr">
+              <td className="gv-td gv-total-label" colSpan={2}>Aprobado</td>
+              {totalsAprobado.map((t, i) => (
+                <td key={i} className="gv-td gv-cell-total-apr">{t || '—'}</td>
               ))}
             </tr>
           </tfoot>
@@ -196,7 +270,7 @@ const GridView: React.FC<GridViewProps> = ({ items, readOnly, onUpdateItem }) =>
 
           {activeItem.estado === 'Aprobado parcial' && (
             <label className="gv-popup-qty">
-              <span>Cant. aprobada</span>
+              <span>Cantidad aprobada</span>
               <input
                 type="number"
                 min={0}
