@@ -1,0 +1,235 @@
+/* ══════════════════════════════════════════════════
+   MODO OSCURO — Solicitud de Viabilidad Tecnológica
+   Se activa con data-theme="dark" en <html>
+   ══════════════════════════════════════════════════ */
+
+[data-theme="dark"] {
+  /* ── Superficies ── */
+  --color-bg:               #060F1E;
+  --color-surface:          #0B1E38;
+  --color-surface-raised:   #102545;
+
+  /* ── Bordes ── */
+  --color-border:           #1C3A63;
+  --color-border-strong:    #2A5090;
+
+  /* ── Texto ── */
+  --color-text-primary:     #E0EAF8;
+  --color-text-secondary:   #88A8CC;
+  --color-text-muted:       #4D6E96;
+
+  /* ── Accent ── */
+  --color-accent-light:     rgba(37,99,235,.18);
+
+  /* ── Estados — fondos oscurecidos ── */
+  --color-approved-bg:      rgba(5,150,105,.18);
+  --color-approved-border:  rgba(110,231,183,.22);
+
+  --color-denied-bg:        rgba(220,38,38,.18);
+  --color-denied-border:    rgba(252,165,165,.18);
+
+  --color-partial-bg:       rgba(217,119,6,.18);
+  --color-partial-border:   rgba(253,230,138,.18);
+
+  --color-pending-bg:       rgba(99,102,241,.18);
+  --color-pending-border:   rgba(199,210,254,.18);
+
+  /* ── Sombras más oscuras ── */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.45);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.55), 0 1px 2px rgba(0,0,0,.40);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.60), 0 2px 4px rgba(0,0,0,.40);
+  --shadow-lg: 0 12px 36px rgba(0,0,0,.65), 0 4px 8px rgba(0,0,0,.45);
+  --shadow-xl: 0 24px 64px rgba(0,0,0,.75), 0 8px 16px rgba(0,0,0,.50);
+}
+
+/* ── Body ── */
+[data-theme="dark"] body {
+  background-color: var(--color-bg);
+  background-image: url('/circuit-dark.svg');
+}
+
+/* ── Executive message ── */
+[data-theme="dark"] .executive-message {
+  background: linear-gradient(135deg, rgba(14,42,86,.55) 0%, var(--color-surface) 100%);
+}
+
+/* ── Toolbar de revisión ── */
+[data-theme="dark"] .review-toolbar {
+  background: rgba(11,30,56,.85);
+  border-color: rgba(255,255,255,.08);
+}
+[data-theme="dark"] .search-box input {
+  color: var(--color-text-primary);
+  border-bottom-color: rgba(255,255,255,.12);
+}
+[data-theme="dark"] .area-count {
+  background: rgba(37,99,235,.12);
+  border-color: rgba(37,99,235,.20);
+}
+[data-theme="dark"] .view-toggle {
+  background: rgba(6,15,30,.80);
+  border-color: rgba(255,255,255,.08);
+}
+[data-theme="dark"] .view-toggle-btn.active {
+  background: var(--color-primary-bright);
+  color: #fff;
+}
+[data-theme="dark"] .view-toggle-btn:not(.active) {
+  color: var(--color-text-muted);
+}
+
+/* ── Botones globales (modo oscuro) ── */
+[data-theme="dark"] .btn-secondary {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-secondary);
+}
+[data-theme="dark"] .btn-add {
+  background: rgba(37,99,235,.12);
+  border-color: var(--color-primary-bright);
+}
+[data-theme="dark"] .btn-outline {
+  background: transparent;
+  border-color: var(--color-border-strong);
+  color: var(--color-text-secondary);
+}
+
+/* ── Area panels (lista) ── */
+[data-theme="dark"] .area-panel {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+[data-theme="dark"] .area-heading {
+  background: var(--color-surface);
+}
+[data-theme="dark"] .area-heading:hover {
+  background: var(--color-surface-raised);
+}
+[data-theme="dark"] .area-name strong { color: var(--color-text-primary); }
+[data-theme="dark"] .area-name-row strong { color: var(--color-text-primary); }
+
+[data-theme="dark"] .person-group {
+  border-top-color: var(--color-border);
+  background: transparent;
+}
+[data-theme="dark"] .item-decision {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+}
+[data-theme="dark"] .item-decision:hover {
+  background: rgba(37,99,235,.07);
+}
+[data-theme="dark"] .comment-input {
+  background: rgba(255,255,255,.04);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+[data-theme="dark"] .comment-input::placeholder { color: var(--color-text-muted); }
+
+[data-theme="dark"] .add-item-in-area {
+  color: var(--color-text-muted);
+  border-top-color: var(--color-border);
+}
+[data-theme="dark"] .add-item-in-area:hover {
+  background: rgba(37,99,235,.10);
+  color: var(--color-primary-bright);
+}
+
+/* ── GridView (cuadrícula) ── */
+[data-theme="dark"] .grid-view-scroll {
+  border-color: var(--color-border);
+}
+[data-theme="dark"] .gv-area-group-row {
+  background: rgba(14,42,86,.55);
+}
+[data-theme="dark"] .gv-area-group-cell {
+  border-color: var(--color-border);
+}
+[data-theme="dark"] .gv-area-toggle {
+  color: var(--color-text-primary);
+}
+[data-theme="dark"] .gv-area-toggle:hover {
+  background: rgba(37,99,235,.10);
+}
+[data-theme="dark"] .gv-td {
+  border-color: var(--color-border);
+}
+[data-theme="dark"] .gv-cell-area {
+  background: rgba(6,15,30,.60);
+  color: var(--color-text-secondary);
+}
+[data-theme="dark"] .gv-cell-user {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+}
+[data-theme="dark"] .gv-empty {
+  background: rgba(6,15,30,.40);
+  color: var(--color-border-strong);
+}
+[data-theme="dark"] .gv-total-row {
+  background: rgba(14,42,86,.70);
+}
+[data-theme="dark"] .gv-cell-total {
+  background: rgba(14,42,86,.45);
+}
+[data-theme="dark"] .grid-table tbody tr:nth-child(even) .gv-cell-area {
+  background: rgba(14,42,86,.45);
+}
+[data-theme="dark"] .grid-table tbody tr:nth-child(even) .gv-cell-user {
+  background: rgba(11,30,56,.80);
+}
+
+/* ── Popup de decisión (modo oscuro) ── */
+[data-theme="dark"] .gv-popup {
+  background: var(--color-surface);
+  border-color: var(--color-border-strong);
+}
+[data-theme="dark"] .gv-popup-header { border-bottom-color: var(--color-border); }
+[data-theme="dark"] .gv-popup-close:hover { background: var(--color-surface-raised); color: var(--color-text-primary); }
+[data-theme="dark"] .gv-popup-btn {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-secondary);
+}
+[data-theme="dark"] .gv-popup-qty input,
+[data-theme="dark"] .gv-popup-obs textarea {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-primary);
+}
+
+/* ── Modal de formulario ── */
+[data-theme="dark"] .modal-overlay { background: rgba(0,0,0,.70); }
+[data-theme="dark"] .modal-box {
+  background: var(--color-surface);
+  border-color: var(--color-border-strong);
+}
+[data-theme="dark"] .ifm-header { border-bottom-color: var(--color-border); }
+[data-theme="dark"] .ifm-body input,
+[data-theme="dark"] .ifm-body select,
+[data-theme="dark"] .ifm-body textarea {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-primary);
+}
+[data-theme="dark"] .ifm-body input::placeholder,
+[data-theme="dark"] .ifm-body textarea::placeholder { color: var(--color-text-muted); }
+[data-theme="dark"] .ifm-body label { color: var(--color-text-secondary); }
+
+/* ── Summary cards ── */
+[data-theme="dark"] .summary-card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+/* ── Progress summary ── */
+[data-theme="dark"] .progress-summary {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+/* ── Export bar ── */
+[data-theme="dark"] .export-bar {
+  background: rgba(6,15,30,.92);
+  border-top-color: var(--color-border);
+}

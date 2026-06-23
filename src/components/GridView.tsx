@@ -29,6 +29,7 @@ interface GridViewProps {
   canApprove: boolean;
   onUpdateItem: (id: string, changes: Partial<TechItem>) => void;
   onAddItem: (data: Omit<TechItem, 'id' | 'estado' | 'cantidadAprobada' | 'comentarioGerencia'>) => void;
+  onDeleteItem: (id: string) => void;
   existingAreas: string[];
 }
 
@@ -39,13 +40,14 @@ interface AreaGroup {
   userRows: Array<{ solicitante: string; byEl: Map<string, TechItem> }>;
 }
 
-const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, onAddItem, existingAreas }) => {
+const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, onAddItem, onDeleteItem, existingAreas }) => {
   const [popup, setPopup] = useState<PopupPos | null>(null);
   const [localComment, setLocalComment] = useState('');
   const [addModal, setAddModal] = useState<{ area: string; solicitante: string; elemento: string } | null>(null);
   const [collapsedAreas, setCollapsedAreas] = useState<Set<string>>(
     () => new Set(items.map(i => i.area))
   );
+  const [pendingDelete, setPendingDelete] = useState<Set<string>>(new Set());
   const popupRef = useRef<HTMLDivElement>(null);
 
   const { elementos, areaGroups, totalsSolicitado, totalsAprobado } = useMemo(() => {
@@ -99,6 +101,19 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
     const left = Math.max(8, Math.min(rect.left, window.innerWidth - popupW - 10));
     setPopup({ itemId: item.id, top, left });
     setLocalComment(item.comentarioGerencia ?? '');
+  };
+
+  const handleCellDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (pendingDelete.has(id)) {
+      onDeleteItem(id);
+      setPendingDelete(prev => { const next = new Set(prev); next.delete(id); return next; });
+    } else {
+      setPendingDelete(prev => new Set(prev).add(id));
+      window.setTimeout(() => {
+        setPendingDelete(prev => { const next = new Set(prev); next.delete(id); return next; });
+      }, 3500);
+    }
   };
 
   const closePopup = () => {
@@ -216,10 +231,11 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
                           );
                         }
                         const isActive = popup?.itemId === item.id;
+                        const isPendingDel = pendingDelete.has(item.id);
                         return (
                           <td
                             key={el}
-                            className={`gv-td gv-cell-val gv-has-item ${ESTADO_CLASS[item.estado]}${canApprove ? ' gv-clickable' : ''}${isActive ? ' gv-active-cell' : ''}`}
+                            className={`gv-td gv-cell-val gv-has-item gv-has-delete ${ESTADO_CLASS[item.estado]}${canApprove ? ' gv-clickable' : ''}${isActive ? ' gv-active-cell' : ''}`}
                             title={canApprove ? `${item.elemento} · ${item.estado} — clic para revisar` : item.estado}
                             onClick={canApprove ? (e) => openPopup(item, e) : undefined}
                           >
@@ -229,6 +245,14 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
                                 {item.estado === 'Aprobado' ? '✓' : item.estado === 'Negado' ? '✗' : '½'}
                               </span>
                             )}
+                            <button
+                              className={`gv-cell-delete-btn${isPendingDel ? ' gv-delete-pending' : ''}`}
+                              onClick={e => handleCellDelete(item.id, e)}
+                              title={isPendingDel ? 'Confirmar eliminación' : 'Eliminar registro'}
+                              aria-label={`Eliminar ${item.elemento}`}
+                            >
+                              {isPendingDel ? '?' : '×'}
+                            </button>
                           </td>
                         );
                       })}

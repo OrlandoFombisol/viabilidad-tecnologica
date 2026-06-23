@@ -175,10 +175,17 @@
   align-items: center;
 }
 
-.header-collapse-btn {
+.header-controls {
   position: absolute;
   top: 12px;
   right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-collapse-btn,
+.header-theme-btn {
   background: rgba(255,255,255,.08);
   border: 1px solid rgba(255,255,255,.16);
   color: rgba(255,255,255,.75);
@@ -189,12 +196,16 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background var(--transition), color var(--transition);
+  transition: background var(--transition), color var(--transition), transform var(--transition-fast);
   flex-shrink: 0;
 }
-.header-collapse-btn:hover {
+.header-collapse-btn:hover,
+.header-theme-btn:hover {
   background: rgba(255,255,255,.20);
   color: #fff;
+}
+.header-theme-btn:hover {
+  transform: scale(1.10);
 }
 
 @media (max-width: 900px) {

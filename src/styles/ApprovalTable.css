@@ -406,6 +406,86 @@
 .item-tool-btn.delete-tool:hover { border-color: var(--color-denied); color: var(--color-denied); background: var(--color-denied-bg); }
 .item-tool-btn.delete-tool.pending { border-color: var(--color-denied); color: #fff; background: var(--color-denied); font-size: .72rem; font-weight: 800; }
 
+/* ─── Rename inline ──────────────────────────────────────── */
+.area-name-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.area-name-row strong { color: var(--color-primary); font-size: .88rem; font-weight: 700; }
+
+.person-name-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inline-rename-btn {
+  display: inline-grid;
+  place-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 5px;
+  color: rgba(255,255,255,.45);
+  opacity: 0;
+  transition: opacity 0.18s, background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.area-heading:hover .inline-rename-btn,
+.area-heading:focus-within .inline-rename-btn {
+  opacity: 1;
+}
+.inline-rename-btn:hover {
+  background: rgba(255,255,255,.15);
+  color: rgba(255,255,255,.9);
+}
+.person-rename-btn {
+  color: var(--color-text-muted);
+}
+.request-person:hover .person-rename-btn {
+  opacity: 1;
+}
+.person-rename-btn:hover {
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+}
+
+.area-name-edit-input {
+  background: rgba(255,255,255,.12);
+  border: 1.5px solid rgba(255,255,255,.35);
+  border-radius: 6px;
+  color: #fff;
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  width: min(220px, 90%);
+  outline: none;
+}
+.area-name-edit-input:focus {
+  border-color: rgba(245,158,11,.7);
+  background: rgba(255,255,255,.18);
+}
+
+.person-name-edit-input {
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: 6px;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  width: min(200px, 90%);
+  outline: none;
+  background: var(--color-surface);
+}
+.person-name-edit-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+}
+
 /* ─── Decision buttons ──────────────────────────────────────── */
 .decision-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
 .decision-btn {

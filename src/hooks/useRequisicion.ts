@@ -262,6 +262,35 @@ export function useRequisicion(userEmail: string | null | undefined) {
     markSaved();
   }, [markSaved]);
 
+  const renameArea = useCallback(async (oldArea: string, newArea: string) => {
+    const trimmed = newArea.trim();
+    if (!trimmed || trimmed === oldArea) return;
+    setItems(prev => prev.map(i => i.area === oldArea ? { ...i, area: trimmed } : i));
+    setSyncStatus('saving');
+    const { error } = await supabase
+      .from('solicitudes')
+      .update({ area: trimmed })
+      .eq('area', oldArea);
+    if (error) setSyncStatus('error');
+    else markSaved();
+  }, [markSaved]);
+
+  const renameSolicitante = useCallback(async (area: string, oldName: string, newName: string) => {
+    const trimmed = newName.trim();
+    if (!trimmed || trimmed === oldName) return;
+    setItems(prev => prev.map(i =>
+      i.area === area && i.solicitante === oldName ? { ...i, solicitante: trimmed } : i
+    ));
+    setSyncStatus('saving');
+    const { error } = await supabase
+      .from('solicitudes')
+      .update({ solicitante: trimmed })
+      .eq('area', area)
+      .eq('solicitante', oldName);
+    if (error) setSyncStatus('error');
+    else markSaved();
+  }, [markSaved]);
+
   const manualSave = useCallback(() => {
     void saveAll(itemsRef.current);
   }, [saveAll]);
@@ -273,6 +302,8 @@ export function useRequisicion(userEmail: string | null | undefined) {
     updateItem,
     addItem,
     deleteItem,
+    renameArea,
+    renameSolicitante,
     approveAll,
     resetAll,
     manualSave,

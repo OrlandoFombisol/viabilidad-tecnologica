@@ -12,7 +12,7 @@ const ExecutiveMessage: React.FC = () => (
         pertinentes para mantener la continuidad, capacidad y condiciones adecuadas de operación.
       </p>
       <p className="exec-body">
-        Se solicita a Gerencia <strong>aprobar, negar o aprobar parcialmente</strong> cada requerimiento.
+        Se solicita a Gerencia aprobar, negar o aprobar parcialmente cada requerimiento.
         Esta revisión constituye la autorización de viabilidad; únicamente las cantidades aprobadas
         conformarán el consolidado que se remitirá posteriormente a Compras.
       </p>

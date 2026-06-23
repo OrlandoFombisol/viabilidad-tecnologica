@@ -11,6 +11,8 @@ interface ApprovalTableProps {
   onUpdateItem: (id: string, changes: Partial<TechItem>) => void;
   onAddItem:    (data: Omit<TechItem, 'id' | 'estado' | 'cantidadAprobada' | 'comentarioGerencia'>) => void;
   onDeleteItem: (id: string) => void;
+  onRenameArea: (oldArea: string, newArea: string) => void;
+  onRenameSolicitante: (area: string, oldName: string, newName: string) => void;
   onApproveAll: () => void;
   onResetAll:   () => void;
 }
@@ -40,7 +42,7 @@ const panelVariants = {
 };
 
 const ApprovalTable: React.FC<ApprovalTableProps> = ({
-  items, canApprove, onUpdateItem, onAddItem, onDeleteItem, onApproveAll, onResetAll,
+  items, canApprove, onUpdateItem, onAddItem, onDeleteItem, onRenameArea, onRenameSolicitante, onApproveAll, onResetAll,
 }) => {
   const areas = useMemo(() => Array.from(new Set(items.map((item) => item.area))), [items]);
   const [openAreas, setOpenAreas]       = useState<Set<string>>(() => new Set(areas.slice(0, 1)));
@@ -49,6 +51,8 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
   const [modal, setModal]               = useState<ModalState>(null);
   const [pendingDelete, setPendingDelete] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode]         = useState<'lista' | 'cuadricula'>('cuadricula');
+  const [editingArea, setEditingArea]   = useState<{ area: string; value: string } | null>(null);
+  const [editingPerson, setEditingPerson] = useState<{ area: string; person: string; value: string } | null>(null);
 
   const normalizedQuery = query.trim().toLocaleLowerCase('es');
   const filteredItems = normalizedQuery
@@ -91,6 +95,28 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
     }
     onResetAll();
     setConfirmReset(false);
+  };
+
+  const startEditArea = (area: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingArea({ area, value: area });
+  };
+
+  const commitAreaRename = (oldArea: string) => {
+    if (!editingArea) return;
+    onRenameArea(oldArea, editingArea.value);
+    setEditingArea(null);
+  };
+
+  const startEditPerson = (area: string, person: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingPerson({ area, person, value: person });
+  };
+
+  const commitPersonRename = (area: string, oldPerson: string) => {
+    if (!editingPerson) return;
+    onRenameSolicitante(area, oldPerson, editingPerson.value);
+    setEditingPerson(null);
   };
 
   const handleDeleteClick = (id: string) => {
@@ -189,7 +215,7 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
 
       {/* ── Grid view ── */}
       {viewMode === 'cuadricula' && (
-        <GridView items={filteredItems} canApprove={canApprove} onUpdateItem={onUpdateItem} onAddItem={onAddItem} existingAreas={areas} />
+        <GridView items={filteredItems} canApprove={canApprove} onUpdateItem={onUpdateItem} onAddItem={onAddItem} onDeleteItem={onDeleteItem} existingAreas={areas} />
       )}
 
       {/* ── Lista view with Framer Motion ── */}
@@ -242,7 +268,36 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
                 </span>
 
                 <span className="area-name">
-                  <strong>{area}</strong>
+                  {editingArea?.area === area ? (
+                    <input
+                      className="area-name-edit-input"
+                      value={editingArea.value}
+                      onClick={e => e.stopPropagation()}
+                      onChange={e => setEditingArea(prev => prev ? { ...prev, value: e.target.value } : null)}
+                      onBlur={() => commitAreaRename(area)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') commitAreaRename(area);
+                        if (e.key === 'Escape') setEditingArea(null);
+                        e.stopPropagation();
+                      }}
+                      autoFocus
+                    />
+                  ) : (
+                    <span className="area-name-row">
+                      <strong>{area}</strong>
+                      <button
+                        className="inline-rename-btn"
+                        onClick={e => startEditArea(area, e)}
+                        title="Renombrar área"
+                        aria-label={`Renombrar área ${area}`}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                      </button>
+                    </span>
+                  )}
                   <small>
                     {people} {people === 1 ? 'solicitante' : 'solicitantes'} ·{' '}
                     {areaItems.length} {areaItems.length === 1 ? 'ítem' : 'ítems'}
@@ -302,7 +357,34 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
                           <div className="request-person">
                             <span className="person-avatar">{person.charAt(0)}</span>
                             <span>
-                              <strong>{person}</strong>
+                              {editingPerson?.area === area && editingPerson.person === person ? (
+                                <input
+                                  className="person-name-edit-input"
+                                  value={editingPerson.value}
+                                  onChange={e => setEditingPerson(prev => prev ? { ...prev, value: e.target.value } : null)}
+                                  onBlur={() => commitPersonRename(area, person)}
+                                  onKeyDown={e => {
+                                    if (e.key === 'Enter') commitPersonRename(area, person);
+                                    if (e.key === 'Escape') setEditingPerson(null);
+                                  }}
+                                  autoFocus
+                                />
+                              ) : (
+                                <span className="person-name-row">
+                                  <strong>{person}</strong>
+                                  <button
+                                    className="inline-rename-btn person-rename-btn"
+                                    onClick={e => startEditPerson(area, person, e)}
+                                    title="Renombrar solicitante"
+                                    aria-label={`Renombrar ${person}`}
+                                  >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="10" height="10">
+                                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                    </svg>
+                                  </button>
+                                </span>
+                              )}
                               <small>{personReviewed} de {personItems.length} decisiones registradas</small>
                             </span>
                           </div>
