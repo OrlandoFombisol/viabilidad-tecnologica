@@ -31,9 +31,15 @@ export function useRevisiones() {
     return rev;
   }, []);
 
-  const deleteRevision = useCallback((id: string) => {
-    setRevisiones(prev => { const next = prev.filter(r => r.id !== id); persist(next); return next; });
+  const updateRevision = useCallback((id: string, updatedItems: TechItem[]) => {
+    setRevisiones(prev => {
+      const next = prev.map(r =>
+        r.id === id ? { ...r, items: JSON.parse(JSON.stringify(updatedItems)) as TechItem[] } : r
+      );
+      persist(next);
+      return next;
+    });
   }, []);
 
-  return { revisiones, addRevision, deleteRevision };
+  return { revisiones, addRevision, updateRevision };
 }

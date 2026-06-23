@@ -74,16 +74,6 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
     setErrors(prev => ({ ...prev, [key]: undefined }));
   };
 
-  const handleAreaSelect = (value: string) => {
-    if (value === OTRO) {
-      setUseCustomArea(true);
-      setField('area', '');
-    } else {
-      setUseCustomArea(false);
-      setField('area', value);
-    }
-  };
-
   const handleElementoSelect = (value: string) => {
     if (value === OTRO) {
       setUseCustomElemento(true);

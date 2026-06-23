@@ -1,16 +1,18 @@
 import React, { useState, useRef } from 'react';
+import type { TechItem } from '../types';
 import type { Revision } from '../hooks/useRevisiones';
-import RevisionDetailModal from './RevisionDetailModal';
+import RevisionTableModal from './RevisionTableModal';
 import '../styles/RevisionesPanel.css';
 
 interface Props {
   revisiones: Revision[];
   currentItemCount: number;
   onCloseRevision: () => void;
+  onUpdateRevision: (id: string, items: TechItem[]) => void;
 }
 
 const RevisionesPanel: React.FC<Props> = ({
-  revisiones, currentItemCount, onCloseRevision,
+  revisiones, currentItemCount, onCloseRevision, onUpdateRevision,
 }) => {
   const [confirmClose, setConfirmClose] = useState(false);
   const [selected, setSelected] = useState<Revision | null>(null);
@@ -92,7 +94,7 @@ const RevisionesPanel: React.FC<Props> = ({
                 const negados   = rev.items.filter(i => i.estado === 'Negado').length;
                 const total     = rev.items.length;
                 return (
-                  <li key={rev.id} className="rp-card" onClick={() => setSelected(rev)} title="Ver revisión">
+                  <li key={rev.id} className="rp-card" onClick={() => setSelected(rev)} title="Abrir revisión">
                     <div className="rp-card-date">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="10" height="10">
                         <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -118,7 +120,11 @@ const RevisionesPanel: React.FC<Props> = ({
       </aside>
 
       {selected && (
-        <RevisionDetailModal revision={selected} onClose={() => setSelected(null)} />
+        <RevisionTableModal
+          revision={selected}
+          onSave={items => onUpdateRevision(selected.id, items)}
+          onClose={() => setSelected(null)}
+        />
       )}
     </>
   );
