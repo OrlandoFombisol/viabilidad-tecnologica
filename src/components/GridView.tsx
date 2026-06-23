@@ -30,6 +30,9 @@ interface GridViewProps {
   onUpdateItem: (id: string, changes: Partial<TechItem>) => void;
   onAddItem: (data: Omit<TechItem, 'id' | 'estado' | 'cantidadAprobada' | 'comentarioGerencia'>) => void;
   onDeleteItem: (id: string) => void;
+  onRenameArea: (oldArea: string, newArea: string) => void;
+  onRenameSolicitante: (area: string, oldName: string, newName: string) => void;
+  onOpenEditModal: (item: TechItem) => void;
   existingAreas: string[];
 }
 
@@ -40,14 +43,19 @@ interface AreaGroup {
   userRows: Array<{ solicitante: string; byEl: Map<string, TechItem> }>;
 }
 
-const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, onAddItem, onDeleteItem, existingAreas }) => {
-  const [popup, setPopup] = useState<PopupPos | null>(null);
+const GridView: React.FC<GridViewProps> = ({
+  items, canApprove, onUpdateItem, onAddItem, onDeleteItem,
+  onRenameArea, onRenameSolicitante, onOpenEditModal, existingAreas,
+}) => {
+  const [popup, setPopup]           = useState<PopupPos | null>(null);
   const [localComment, setLocalComment] = useState('');
-  const [addModal, setAddModal] = useState<{ area: string; solicitante: string; elemento: string } | null>(null);
+  const [addModal, setAddModal]     = useState<{ area: string; solicitante: string; elemento: string } | null>(null);
   const [collapsedAreas, setCollapsedAreas] = useState<Set<string>>(
     () => new Set(items.map(i => i.area))
   );
   const [pendingDelete, setPendingDelete] = useState<Set<string>>(new Set());
+  const [editingArea,   setEditingArea]   = useState<{ area: string; value: string } | null>(null);
+  const [editingPerson, setEditingPerson] = useState<{ area: string; person: string; value: string } | null>(null);
   const popupRef = useRef<HTMLDivElement>(null);
 
   const { elementos, areaGroups, totalsSolicitado, totalsAprobado } = useMemo(() => {
@@ -55,7 +63,6 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
     items.forEach(i => elementoSet.add(i.elemento));
     const elementos = Array.from(elementoSet);
 
-    // Group by area → user
     const areaMap = new Map<string, Map<string, Map<string, TechItem>>>();
     items.forEach(item => {
       if (!areaMap.has(item.area)) areaMap.set(item.area, new Map());
@@ -82,6 +89,7 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
   const activeItem = popup ? items.find(i => i.id === popup.itemId) ?? null : null;
 
   const toggleArea = (area: string) => {
+    if (editingArea?.area === area) return;
     setCollapsedAreas(prev => {
       const next = new Set(prev);
       if (next.has(area)) next.delete(area);
@@ -90,19 +98,29 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
     });
   };
 
-  const openPopup = (item: TechItem, e: React.MouseEvent<HTMLTableCellElement>) => {
-    if (!canApprove) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const popupW = 265;
-    const popupEstH = 230;
-    const top = rect.bottom + 4 + popupEstH > window.innerHeight
-      ? Math.max(8, rect.top - popupEstH - 4)
-      : rect.bottom + 4;
-    const left = Math.max(8, Math.min(rect.left, window.innerWidth - popupW - 10));
-    setPopup({ itemId: item.id, top, left });
-    setLocalComment(item.comentarioGerencia ?? '');
+  /* ── Rename area ── */
+  const startEditArea = (area: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingArea({ area, value: area });
+  };
+  const commitAreaRename = (oldArea: string) => {
+    if (!editingArea) return;
+    onRenameArea(oldArea, editingArea.value);
+    setEditingArea(null);
   };
 
+  /* ── Rename person ── */
+  const startEditPerson = (area: string, person: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingPerson({ area, person, value: person });
+  };
+  const commitPersonRename = (area: string, oldPerson: string) => {
+    if (!editingPerson) return;
+    onRenameSolicitante(area, oldPerson, editingPerson.value);
+    setEditingPerson(null);
+  };
+
+  /* ── Delete cell ── */
   const handleCellDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (pendingDelete.has(id)) {
@@ -114,6 +132,20 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
         setPendingDelete(prev => { const next = new Set(prev); next.delete(id); return next; });
       }, 3500);
     }
+  };
+
+  /* ── Popup (aprobación) ── */
+  const openPopup = (item: TechItem, e: React.MouseEvent<HTMLTableCellElement>) => {
+    if (!canApprove) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const popupW = 265;
+    const popupEstH = 230;
+    const top  = rect.bottom + 4 + popupEstH > window.innerHeight
+      ? Math.max(8, rect.top - popupEstH - 4)
+      : rect.bottom + 4;
+    const left = Math.max(8, Math.min(rect.left, window.innerWidth - popupW - 10));
+    setPopup({ itemId: item.id, top, left });
+    setLocalComment(item.comentarioGerencia ?? '');
   };
 
   const closePopup = () => {
@@ -176,15 +208,15 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
           <tbody>
             {areaGroups.map(({ area, userRows }) => {
               const isCollapsed = collapsedAreas.has(area);
-              const areaItems = items.filter(i => i.area === area);
-              const reviewed  = areaItems.filter(i => i.estado !== 'Pendiente').length;
-              const aprobados = areaItems.filter(i => i.estado === 'Aprobado').length;
-              const parciales = areaItems.filter(i => i.estado === 'Aprobado parcial').length;
-              const negados   = areaItems.filter(i => i.estado === 'Negado').length;
+              const areaItems   = items.filter(i => i.area === area);
+              const reviewed    = areaItems.filter(i => i.estado !== 'Pendiente').length;
+              const aprobados   = areaItems.filter(i => i.estado === 'Aprobado').length;
+              const parciales   = areaItems.filter(i => i.estado === 'Aprobado parcial').length;
+              const negados     = areaItems.filter(i => i.estado === 'Negado').length;
 
               return (
                 <React.Fragment key={area}>
-                  {/* Area group header */}
+                  {/* Cabecera de área */}
                   <tr className="gv-area-group-row">
                     <td colSpan={colSpan} className="gv-area-group-cell">
                       <button
@@ -193,7 +225,38 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
                         aria-expanded={!isCollapsed}
                       >
                         <span className={`gv-area-chevron${isCollapsed ? ' collapsed' : ''}`}>▼</span>
-                        <strong>{area}</strong>
+
+                        {editingArea?.area === area ? (
+                          <input
+                            className="gv-area-rename-input"
+                            value={editingArea.value}
+                            onClick={e => e.stopPropagation()}
+                            onChange={e => setEditingArea(prev => prev ? { ...prev, value: e.target.value } : null)}
+                            onBlur={() => commitAreaRename(area)}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') { commitAreaRename(area); }
+                              if (e.key === 'Escape') setEditingArea(null);
+                              e.stopPropagation();
+                            }}
+                            autoFocus
+                          />
+                        ) : (
+                          <span className="gv-area-label-row">
+                            <strong>{area}</strong>
+                            <button
+                              className="gv-rename-btn"
+                              onClick={e => startEditArea(area, e)}
+                              title="Renombrar área"
+                              aria-label={`Renombrar ${area}`}
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                              </svg>
+                            </button>
+                          </span>
+                        )}
+
                         <span className="gv-area-meta">
                           {userRows.length} {userRows.length === 1 ? 'usuario' : 'usuarios'} · {areaItems.length} ítems
                         </span>
@@ -211,11 +274,54 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
                     </td>
                   </tr>
 
-                  {/* User rows */}
+                  {/* Filas de usuarios */}
                   {!isCollapsed && userRows.map(({ solicitante, byEl }) => (
                     <tr key={`${area}|||${solicitante}`}>
                       <td className="gv-td gv-cell-area">{area}</td>
-                      <td className="gv-td gv-cell-user">{solicitante}</td>
+                      <td className="gv-td gv-cell-user">
+                        {editingPerson?.area === area && editingPerson.person === solicitante ? (
+                          <input
+                            className="gv-person-rename-input"
+                            value={editingPerson.value}
+                            onChange={e => setEditingPerson(prev => prev ? { ...prev, value: e.target.value } : null)}
+                            onBlur={() => commitPersonRename(area, solicitante)}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') commitPersonRename(area, solicitante);
+                              if (e.key === 'Escape') setEditingPerson(null);
+                            }}
+                            autoFocus
+                          />
+                        ) : (
+                          <span className="gv-user-label-row">
+                            <span className="gv-user-name">{solicitante}</span>
+                            <button
+                              className="gv-rename-btn gv-person-rename-btn"
+                              onClick={e => startEditPerson(area, solicitante, e)}
+                              title="Renombrar persona"
+                              aria-label={`Renombrar ${solicitante}`}
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="10" height="10">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                              </svg>
+                            </button>
+                            <button
+                              className="gv-edit-item-btn"
+                              onClick={() => {
+                                const firstItem = Array.from(byEl.values())[0];
+                                if (firstItem) onOpenEditModal(firstItem);
+                              }}
+                              title="Editar solicitud"
+                              aria-label={`Editar solicitud de ${solicitante}`}
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="10" height="10">
+                                <circle cx="12" cy="12" r="3" />
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
+                              </svg>
+                            </button>
+                          </span>
+                        )}
+                      </td>
                       {elementos.map(el => {
                         const item = byEl.get(el);
                         if (!item) {
@@ -230,14 +336,14 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
                             </td>
                           );
                         }
-                        const isActive = popup?.itemId === item.id;
+                        const isActive    = popup?.itemId === item.id;
                         const isPendingDel = pendingDelete.has(item.id);
                         return (
                           <td
                             key={el}
                             className={`gv-td gv-cell-val gv-has-item gv-has-delete ${ESTADO_CLASS[item.estado]}${canApprove ? ' gv-clickable' : ''}${isActive ? ' gv-active-cell' : ''}`}
                             title={canApprove ? `${item.elemento} · ${item.estado} — clic para revisar` : item.estado}
-                            onClick={canApprove ? (e) => openPopup(item, e) : undefined}
+                            onClick={canApprove ? e => openPopup(item, e) : undefined}
                           >
                             <span className="gv-qty">{item.cantidadSolicitada}</span>
                             {item.estado !== 'Pendiente' && (
@@ -277,6 +383,7 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
         </table>
       </div>
 
+      {/* Popup de decisión */}
       {popup && activeItem && (
         <div
           ref={popupRef}
@@ -313,7 +420,7 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
                 min={0}
                 max={activeItem.cantidadSolicitada}
                 value={activeItem.cantidadAprobada}
-                onChange={(e) => changeQty(e.target.value)}
+                onChange={e => changeQty(e.target.value)}
               />
             </label>
           )}
@@ -322,7 +429,7 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
             <span>Observación</span>
             <textarea
               value={localComment}
-              onChange={(e) => setLocalComment(e.target.value)}
+              onChange={e => setLocalComment(e.target.value)}
               onBlur={() => onUpdateItem(activeItem.id, { comentarioGerencia: localComment })}
               placeholder="Comentario opcional…"
               rows={2}
@@ -331,6 +438,7 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
         </div>
       )}
 
+      {/* Modal agregar desde celda vacía */}
       {addModal && (
         <ItemFormModal
           mode="add"
@@ -338,10 +446,7 @@ const GridView: React.FC<GridViewProps> = ({ items, canApprove, onUpdateItem, on
           defaultArea={addModal.area}
           defaultSolicitante={addModal.solicitante}
           defaultElemento={addModal.elemento}
-          onSubmit={(data) => {
-            onAddItem(data);
-            setAddModal(null);
-          }}
+          onSubmit={data => { onAddItem(data); setAddModal(null); }}
           onClose={() => setAddModal(null)}
         />
       )}

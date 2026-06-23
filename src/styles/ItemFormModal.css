@@ -107,6 +107,26 @@
   margin-top: 2px;
 }
 
+/* Input secundario para "Otro" */
+.ifm-custom-input {
+  margin-top: 6px;
+  width: 100%;
+  border: 1.5px solid var(--color-primary-bright);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font: inherit;
+  font-size: .84rem;
+  color: var(--color-text-primary);
+  background: var(--color-accent-light);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.ifm-custom-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+}
+.ifm-custom-input.has-error { border-color: var(--color-denied); }
+
 /* Hint de campo */
 .ifm-hint {
   display: block;

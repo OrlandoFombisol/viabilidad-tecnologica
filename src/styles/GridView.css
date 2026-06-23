@@ -261,6 +261,67 @@
 }
 .gv-popup-obs textarea:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
 
+/* ── Rename área ── */
+.gv-area-label-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.gv-area-rename-input {
+  background: rgba(255,255,255,.15);
+  border: 1.5px solid rgba(255,255,255,.40);
+  border-radius: 5px;
+  color: var(--color-primary);
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  width: min(200px, 40vw);
+  outline: none;
+}
+.gv-area-rename-input:focus { border-color: var(--color-primary-bright); }
+
+/* ── Rename usuario ── */
+.gv-user-label-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+.gv-user-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gv-person-rename-input {
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: 5px;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: .73rem;
+  padding: 2px 6px;
+  width: 100%;
+  outline: none;
+  background: var(--color-surface);
+}
+.gv-person-rename-input:focus { border-color: var(--color-accent); }
+
+/* ── Botones rename (lápiz) ── */
+.gv-rename-btn,
+.gv-edit-item-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 4px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  line-height: 0;
+  transition: background 0.12s, color 0.12s;
+}
+.gv-area-toggle:hover .gv-rename-btn { display: inline-flex; }
+.gv-cell-user:hover .gv-rename-btn,
+.gv-cell-user:hover .gv-edit-item-btn { display: inline-flex; }
+.gv-rename-btn:hover { background: rgba(37,99,235,.10); color: var(--color-primary-bright); }
+.gv-edit-item-btn:hover { background: rgba(5,150,105,.10); color: var(--color-approved); }
+
 /* ── Botón eliminar en celda ── */
 .gv-cell-delete-btn {
   display: none;

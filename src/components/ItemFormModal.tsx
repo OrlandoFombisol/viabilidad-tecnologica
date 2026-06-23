@@ -36,12 +36,24 @@ interface ItemFormModalProps {
   onClose: () => void;
 }
 
+const OTRO = '__otro__';
+
 const ItemFormModal: React.FC<ItemFormModalProps> = ({
   mode, item, existingAreas, defaultArea, defaultSolicitante, defaultElemento, onSubmit, onDelete, onClose,
 }) => {
+  const initArea     = mode === 'edit' && item ? item.area     : (defaultArea ?? '');
+  const initElemento = mode === 'edit' && item ? item.elemento : (defaultElemento ?? '');
+
+  const [useCustomArea,     setUseCustomArea]     = useState(() => !!initArea     && !existingAreas.includes(initArea));
+  const [useCustomElemento, setUseCustomElemento] = useState(() => !!initElemento && !ELEMENTOS_SUGERIDOS.includes(initElemento));
+
   const [form, setForm] = useState<FormData>(() => {
     if (mode === 'edit' && item) {
-      return { area: item.area, solicitante: item.solicitante, elemento: item.elemento, categoria: item.categoria, prioridad: item.prioridad, cantidadSolicitada: item.cantidadSolicitada, justificacion: item.justificacion };
+      return {
+        area: item.area, solicitante: item.solicitante, elemento: item.elemento,
+        categoria: item.categoria, prioridad: item.prioridad,
+        cantidadSolicitada: item.cantidadSolicitada, justificacion: item.justificacion,
+      };
     }
     const tpl = defaultElemento ? ELEMENTO_TEMPLATES[defaultElemento] : null;
     return {
@@ -54,6 +66,7 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
       justificacion: tpl?.justificacion ?? '',
     };
   });
+
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
 
   const setField = <K extends keyof FormData>(key: K, value: FormData[K]) => {
@@ -61,24 +74,42 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
     setErrors(prev => ({ ...prev, [key]: undefined }));
   };
 
-  const handleElemento = (value: string) => {
-    const tpl = ELEMENTO_TEMPLATES[value];
-    if (tpl) {
-      setForm(prev => ({ ...prev, elemento: value, categoria: tpl.categoria, prioridad: tpl.prioridad, justificacion: tpl.justificacion }));
+  const handleAreaSelect = (value: string) => {
+    if (value === OTRO) {
+      setUseCustomArea(true);
+      setField('area', '');
     } else {
-      setField('elemento', value);
+      setUseCustomArea(false);
+      setField('area', value);
     }
-    setErrors(prev => ({ ...prev, elemento: undefined }));
+  };
+
+  const handleElementoSelect = (value: string) => {
+    if (value === OTRO) {
+      setUseCustomElemento(true);
+      setField('elemento', '');
+      setField('categoria', '');
+      setField('justificacion', '');
+    } else {
+      setUseCustomElemento(false);
+      const tpl = ELEMENTO_TEMPLATES[value];
+      if (tpl) {
+        setForm(prev => ({ ...prev, elemento: value, categoria: tpl.categoria, prioridad: tpl.prioridad, justificacion: tpl.justificacion }));
+        setErrors(prev => ({ ...prev, elemento: undefined, categoria: undefined, justificacion: undefined }));
+      } else {
+        setField('elemento', value);
+      }
+    }
   };
 
   const validate = (): boolean => {
     const e: Partial<Record<keyof FormData, string>> = {};
-    if (!form.area.trim())         e.area         = 'Obligatorio';
-    if (!form.solicitante.trim())  e.solicitante  = 'Obligatorio';
-    if (!form.elemento.trim())     e.elemento     = 'Obligatorio';
-    if (!form.categoria.trim())    e.categoria    = 'Obligatorio';
-    if (!form.justificacion.trim())e.justificacion= 'Obligatorio';
-    if (mode === 'add' && form.cantidadSolicitada < 1) e.cantidadSolicitada = 'Mínimo 1 para nueva solicitud';
+    if (!form.area.trim())          e.area          = 'Obligatorio';
+    if (!form.solicitante.trim())   e.solicitante   = 'Obligatorio';
+    if (!form.elemento.trim())      e.elemento      = 'Obligatorio';
+    if (!form.categoria.trim())     e.categoria     = 'Obligatorio';
+    if (!form.justificacion.trim()) e.justificacion = 'Obligatorio';
+    if (mode === 'add' && form.cantidadSolicitada < 1) e.cantidadSolicitada = 'Mínimo 1';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -118,7 +149,9 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
             <h3 className="ifm-title">{mode === 'add' ? 'Agregar ítem al levantamiento' : 'Modificar datos del ítem'}</h3>
           </div>
           <button className="ifm-close" onClick={onClose} aria-label="Cerrar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="16" height="16"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="16" height="16">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
@@ -127,23 +160,27 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
           <div className="ifm-row-2">
             <div className="ifm-field">
               <label htmlFor="ifm-area">Área / Departamento</label>
-              <input
+              <select
                 id="ifm-area"
-                list="ifm-areas-list"
-                value={form.area}
-                onChange={e => setField('area', e.target.value)}
-                placeholder="Seleccione o escriba un área nueva"
+                value={useCustomArea ? OTRO : form.area}
+                onChange={e => handleAreaSelect(e.target.value)}
                 className={errors.area ? 'has-error' : ''}
-                autoFocus
-                autoComplete="off"
-              />
-              <datalist id="ifm-areas-list">
-                {existingAreas.map(a => <option key={a} value={a} />)}
-              </datalist>
-              {errors.area
-                ? <span className="ifm-error">{errors.area}</span>
-                : <span className="ifm-hint">Seleccione una existente o escriba un nombre nuevo</span>
-              }
+                autoFocus={!useCustomArea}
+              >
+                <option value="">— Seleccione un área —</option>
+                {existingAreas.map(a => <option key={a} value={a}>{a}</option>)}
+                <option value={OTRO}>✦ Otro (área nueva)…</option>
+              </select>
+              {useCustomArea && (
+                <input
+                  className={`ifm-custom-input${errors.area ? ' has-error' : ''}`}
+                  value={form.area}
+                  onChange={e => setField('area', e.target.value)}
+                  placeholder="Nombre del área nueva"
+                  autoFocus
+                />
+              )}
+              {errors.area && <span className="ifm-error">{errors.area}</span>}
             </div>
             <div className="ifm-field">
               <label htmlFor="ifm-solicitante">Solicitante</label>
@@ -162,22 +199,26 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
           <div className="ifm-row-2">
             <div className="ifm-field">
               <label htmlFor="ifm-elemento">Elemento</label>
-              <input
+              <select
                 id="ifm-elemento"
-                list="ifm-elementos-list"
-                value={form.elemento}
-                onChange={e => handleElemento(e.target.value)}
-                placeholder="Seleccione o escriba un elemento nuevo"
+                value={useCustomElemento ? OTRO : form.elemento}
+                onChange={e => handleElementoSelect(e.target.value)}
                 className={errors.elemento ? 'has-error' : ''}
-                autoComplete="off"
-              />
-              <datalist id="ifm-elementos-list">
-                {ELEMENTOS_SUGERIDOS.map(el => <option key={el} value={el} />)}
-              </datalist>
-              {errors.elemento
-                ? <span className="ifm-error">{errors.elemento}</span>
-                : <span className="ifm-hint">Elija uno sugerido o escriba un elemento diferente</span>
-              }
+              >
+                <option value="">— Seleccione un elemento —</option>
+                {ELEMENTOS_SUGERIDOS.map(el => <option key={el} value={el}>{el}</option>)}
+                <option value={OTRO}>✦ Otro (elemento nuevo)…</option>
+              </select>
+              {useCustomElemento && (
+                <input
+                  className={`ifm-custom-input${errors.elemento ? ' has-error' : ''}`}
+                  value={form.elemento}
+                  onChange={e => setField('elemento', e.target.value)}
+                  placeholder="Nombre del elemento nuevo"
+                  autoFocus
+                />
+              )}
+              {errors.elemento && <span className="ifm-error">{errors.elemento}</span>}
             </div>
             <div className="ifm-field">
               <label htmlFor="ifm-cantidad">Cantidad solicitada</label>
