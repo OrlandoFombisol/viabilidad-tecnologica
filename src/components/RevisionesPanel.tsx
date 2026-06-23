@@ -8,16 +8,19 @@ interface Props {
   revisiones: Revision[];
   currentItemCount: number;
   onCloseRevision: () => void;
+  onNuevaSolicitud: () => void;
   onUpdateRevision: (id: string, items: TechItem[]) => void;
 }
 
 const RevisionesPanel: React.FC<Props> = ({
-  revisiones, currentItemCount, onCloseRevision, onUpdateRevision,
+  revisiones, currentItemCount, onCloseRevision, onNuevaSolicitud, onUpdateRevision,
 }) => {
-  const [expanded,     setExpanded]     = useState(false);
-  const [confirmClose, setConfirmClose] = useState(false);
-  const [selected,     setSelected]     = useState<Revision | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [expanded,       setExpanded]       = useState(false);
+  const [confirmClose,   setConfirmClose]   = useState(false);
+  const [confirmNueva,   setConfirmNueva]   = useState(false);
+  const [selected,       setSelected]       = useState<Revision | null>(null);
+  const timerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef2 = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleCloseClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -27,8 +30,23 @@ const RevisionesPanel: React.FC<Props> = ({
       if (timerRef.current) clearTimeout(timerRef.current);
     } else {
       setConfirmClose(true);
+      setConfirmNueva(false);
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = window.setTimeout(() => setConfirmClose(false), 4500);
+    }
+  };
+
+  const handleNuevaClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirmNueva) {
+      onNuevaSolicitud();
+      setConfirmNueva(false);
+      if (timerRef2.current) clearTimeout(timerRef2.current);
+    } else {
+      setConfirmNueva(true);
+      setConfirmClose(false);
+      if (timerRef2.current) clearTimeout(timerRef2.current);
+      timerRef2.current = window.setTimeout(() => setConfirmNueva(false), 4500);
     }
   };
 
@@ -109,9 +127,20 @@ const RevisionesPanel: React.FC<Props> = ({
           </div>
 
           <div className="rp-bar-right">
-            {confirmClose && (
+            {(confirmClose || confirmNueva) && (
               <span className="rp-confirm-label">¿Confirmar? —</span>
             )}
+            <button
+              className={`rp-close-btn rp-nueva-btn${confirmNueva ? ' rp-confirming' : ''}`}
+              onClick={handleNuevaClick}
+              title="Limpiar tabla para ingresar nuevas solicitudes"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="12" height="12">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              {confirmNueva ? '¡Confirmar!' : 'Nueva solicitud'}
+            </button>
             <button
               className={`rp-close-btn${confirmClose ? ' rp-confirming' : ''}${currentItemCount === 0 ? ' rp-disabled' : ''}`}
               onClick={handleCloseClick}

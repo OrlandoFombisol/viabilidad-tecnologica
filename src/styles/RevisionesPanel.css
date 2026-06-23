@@ -210,6 +210,16 @@
   to   { box-shadow: 0 0 0 6px rgba(220,38,38,.0); }
 }
 
+/* Botón nueva solicitud — variante más discreta */
+.rp-nueva-btn {
+  background: rgba(255,255,255,.08) !important;
+  border-color: rgba(255,255,255,.22) !important;
+}
+.rp-nueva-btn:hover:not(.rp-disabled) {
+  background: rgba(255,255,255,.18) !important;
+  border-color: rgba(255,255,255,.40) !important;
+}
+
 /* Chevron */
 .rp-chevron {
   color: rgba(255,255,255,.75);

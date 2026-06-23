@@ -63,12 +63,17 @@ function App() {
 
   const { revisiones, addRevision, updateRevision } = useRevisiones();
 
-  // Guarda snapshot y limpia tabla — las áreas base siempre se muestran en GridView
+  // Guarda snapshot y restaura la tabla a los datos iniciales
   const handleCloseRevision = useCallback(() => {
     if (items.length === 0) return;
     addRevision(items);
+    void resetAll();
+  }, [items, addRevision, resetAll]);
+
+  // Limpia la tabla completamente para iniciar una nueva solicitud en blanco
+  const handleNuevaSolicitud = useCallback(() => {
     void clearAll();
-  }, [items, addRevision, clearAll]);
+  }, [clearAll]);
 
   if (!passed) return <LandingPage onEnter={() => setPassed(true)} />;
   if (authLoading) return <LoadingScreen />;
@@ -112,6 +117,7 @@ function App() {
           revisiones={revisiones}
           currentItemCount={items.length}
           onCloseRevision={handleCloseRevision}
+          onNuevaSolicitud={handleNuevaSolicitud}
           onUpdateRevision={updateRevision}
         />
       )}
