@@ -7,11 +7,10 @@ interface Props {
   revisiones: Revision[];
   currentItemCount: number;
   onCloseRevision: () => void;
-  onDeleteRevision: (id: string) => void;
 }
 
 const RevisionesPanel: React.FC<Props> = ({
-  revisiones, currentItemCount, onCloseRevision, onDeleteRevision,
+  revisiones, currentItemCount, onCloseRevision,
 }) => {
   const [confirmClose, setConfirmClose] = useState(false);
   const [selected, setSelected] = useState<Revision | null>(null);
@@ -93,7 +92,7 @@ const RevisionesPanel: React.FC<Props> = ({
                 const negados   = rev.items.filter(i => i.estado === 'Negado').length;
                 const total     = rev.items.length;
                 return (
-                  <li key={rev.id} className="rp-card" onClick={() => setSelected(rev)} title="Ver detalle">
+                  <li key={rev.id} className="rp-card" onClick={() => setSelected(rev)} title="Ver revisión">
                     <div className="rp-card-date">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="10" height="10">
                         <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -109,12 +108,7 @@ const RevisionesPanel: React.FC<Props> = ({
                       {aprobados > 0 && <span className="rp-card-apr">{aprobados} apr.</span>}
                       {negados   > 0 && <span className="rp-card-neg">{negados} neg.</span>}
                     </div>
-                    <button
-                      className="rp-card-del"
-                      onClick={e => { e.stopPropagation(); onDeleteRevision(rev.id); }}
-                      title="Eliminar del historial"
-                      aria-label="Eliminar revisión"
-                    >×</button>
+                    <span className="rp-card-arrow">›</span>
                   </li>
                 );
               })}

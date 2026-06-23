@@ -61,7 +61,7 @@ function App() {
     manualSave,
   } = useRequisicion(role ?? undefined);
 
-  const { revisiones, addRevision, deleteRevision } = useRevisiones();
+  const { revisiones, addRevision } = useRevisiones();
 
   const handleCloseRevision = useCallback(() => {
     if (items.length === 0) return;
@@ -83,7 +83,6 @@ function App() {
           revisiones={revisiones}
           currentItemCount={items.length}
           onCloseRevision={handleCloseRevision}
-          onDeleteRevision={deleteRevision}
         />
       )}
       <div className="app-main">
