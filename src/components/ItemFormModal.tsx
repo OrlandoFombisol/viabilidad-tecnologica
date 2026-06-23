@@ -156,43 +156,49 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="ifm-body" noValidate>
-          {/* Fila 1: Área + Solicitante */}
-          <div className="ifm-row-2">
-            <div className="ifm-field">
-              <label htmlFor="ifm-area">Área / Departamento</label>
-              <select
-                id="ifm-area"
-                value={useCustomArea ? OTRO : form.area}
-                onChange={e => handleAreaSelect(e.target.value)}
-                className={errors.area ? 'has-error' : ''}
-                autoFocus={!useCustomArea}
+          {/* Fila 1: Área (chips) + Solicitante */}
+          <div className="ifm-field">
+            <label>Área / Departamento</label>
+            <div className={`ifm-area-chips${errors.area ? ' ifm-chips-error' : ''}`}>
+              {existingAreas.map(a => (
+                <button
+                  key={a}
+                  type="button"
+                  className={`ifm-chip${form.area === a && !useCustomArea ? ' ifm-chip-active' : ''}`}
+                  onClick={() => { setUseCustomArea(false); setField('area', a); }}
+                >
+                  {a}
+                </button>
+              ))}
+              <button
+                type="button"
+                className={`ifm-chip ifm-chip-new${useCustomArea ? ' ifm-chip-active' : ''}`}
+                onClick={() => { setUseCustomArea(true); setField('area', ''); }}
               >
-                <option value="">— Seleccione un área —</option>
-                {existingAreas.map(a => <option key={a} value={a}>{a}</option>)}
-                <option value={OTRO}>✦ Otro (área nueva)…</option>
-              </select>
-              {useCustomArea && (
-                <input
-                  className={`ifm-custom-input${errors.area ? ' has-error' : ''}`}
-                  value={form.area}
-                  onChange={e => setField('area', e.target.value)}
-                  placeholder="Nombre del área nueva"
-                  autoFocus
-                />
-              )}
-              {errors.area && <span className="ifm-error">{errors.area}</span>}
+                + Nueva área
+              </button>
             </div>
-            <div className="ifm-field">
-              <label htmlFor="ifm-solicitante">Solicitante</label>
+            {useCustomArea && (
               <input
-                id="ifm-solicitante"
-                value={form.solicitante}
-                onChange={e => setField('solicitante', e.target.value)}
-                placeholder="Nombre completo"
-                className={errors.solicitante ? 'has-error' : ''}
+                className={`ifm-custom-input${errors.area ? ' has-error' : ''}`}
+                value={form.area}
+                onChange={e => setField('area', e.target.value)}
+                placeholder="Nombre del área nueva"
+                autoFocus
               />
-              {errors.solicitante && <span className="ifm-error">{errors.solicitante}</span>}
-            </div>
+            )}
+            {errors.area && <span className="ifm-error">{errors.area}</span>}
+          </div>
+          <div className="ifm-field">
+            <label htmlFor="ifm-solicitante">Solicitante</label>
+            <input
+              id="ifm-solicitante"
+              value={form.solicitante}
+              onChange={e => setField('solicitante', e.target.value)}
+              placeholder="Nombre completo"
+              className={errors.solicitante ? 'has-error' : ''}
+            />
+            {errors.solicitante && <span className="ifm-error">{errors.solicitante}</span>}
           </div>
 
           {/* Fila 2: Elemento + Cantidad */}

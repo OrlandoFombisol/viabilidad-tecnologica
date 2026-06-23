@@ -10,6 +10,7 @@ import ProgressSummary from './components/ProgressSummary';
 import ApprovalTable from './components/ApprovalTable';
 import ExportButton from './components/ExportButton';
 import RevisionesPanel from './components/RevisionesPanel';
+import ImportExcelButton from './components/ImportExcelButton';
 import LoginPage from './components/LoginPage';
 import LandingPage from './components/LandingPage';
 import './styles/global.css';
@@ -77,6 +78,14 @@ function App() {
 
   return (
     <div className="app-layout">
+      {canApprove && (
+        <RevisionesPanel
+          revisiones={revisiones}
+          currentItemCount={items.length}
+          onCloseRevision={handleCloseRevision}
+          onDeleteRevision={deleteRevision}
+        />
+      )}
       <div className="app-main">
         <Header
           reportStatus={reportStatus}
@@ -99,6 +108,7 @@ function App() {
           onResetAll={() => void resetAll()}
         />
         <SummaryCards items={items} />
+        <ImportExcelButton onAddItem={addItem} />
         <ExportButton
           items={items}
           syncStatus={syncStatus}
@@ -106,15 +116,6 @@ function App() {
           onSave={manualSave}
         />
       </div>
-
-      {canApprove && (
-        <RevisionesPanel
-          revisiones={revisiones}
-          currentItemCount={items.length}
-          onCloseRevision={handleCloseRevision}
-          onDeleteRevision={deleteRevision}
-        />
-      )}
     </div>
   );
 }

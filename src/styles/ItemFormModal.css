@@ -107,6 +107,52 @@
   margin-top: 2px;
 }
 
+/* Chips de área */
+.ifm-area-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 0 2px;
+}
+.ifm-area-chips.ifm-chips-error .ifm-chip { border-color: var(--color-denied); }
+
+.ifm-chip {
+  padding: 5px 12px;
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: 99px;
+  background: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+  font-size: .75rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: background .12s, border-color .12s, color .12s, box-shadow .12s;
+  white-space: nowrap;
+}
+.ifm-chip:hover {
+  background: #EEF3FA;
+  border-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+.ifm-chip-active {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(37,99,235,.28);
+}
+.ifm-chip-new {
+  border-style: dashed;
+  color: var(--color-primary-light);
+}
+.ifm-chip-new:hover {
+  border-style: solid;
+  background: #EEF3FA;
+  color: var(--color-primary);
+}
+.ifm-chip-new.ifm-chip-active {
+  border-style: solid;
+}
+
 /* Input secundario para "Otro" */
 .ifm-custom-input {
   margin-top: 6px;
