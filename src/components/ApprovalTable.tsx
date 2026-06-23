@@ -32,7 +32,7 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
   const [confirmReset, setConfirmReset] = useState(false);
   const [modal, setModal]             = useState<ModalState>(null);
   const [pendingDelete, setPendingDelete] = useState<Set<string>>(new Set());
-  const [viewMode, setViewMode]       = useState<'lista' | 'cuadricula'>('lista');
+  const [viewMode, setViewMode]       = useState<'lista' | 'cuadricula'>('cuadricula');
 
   const normalizedQuery = query.trim().toLocaleLowerCase('es');
   const visibleAreas = areas.filter((area) => {
@@ -138,17 +138,6 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
           <span className="area-count">{areas.length} áreas · {items.length} decisiones</span>
           <div className="view-toggle" role="group" aria-label="Modo de vista">
             <button
-              className={`view-toggle-btn${viewMode === 'lista' ? ' active' : ''}`}
-              onClick={() => setViewMode('lista')}
-              title="Vista lista"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15">
-                <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
-                <line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
-              </svg>
-              Vista 1
-            </button>
-            <button
               className={`view-toggle-btn${viewMode === 'cuadricula' ? ' active' : ''}`}
               onClick={() => setViewMode('cuadricula')}
               title="Vista cuadrícula"
@@ -156,6 +145,17 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15">
                 <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
                 <rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+              </svg>
+              Vista 1
+            </button>
+            <button
+              className={`view-toggle-btn${viewMode === 'lista' ? ' active' : ''}`}
+              onClick={() => setViewMode('lista')}
+              title="Vista lista"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15">
+                <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
               </svg>
               Vista 2
             </button>

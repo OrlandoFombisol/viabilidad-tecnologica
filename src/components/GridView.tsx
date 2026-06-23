@@ -39,7 +39,9 @@ interface AreaGroup {
 const GridView: React.FC<GridViewProps> = ({ items, readOnly, onUpdateItem }) => {
   const [popup, setPopup] = useState<PopupPos | null>(null);
   const [localComment, setLocalComment] = useState('');
-  const [collapsedAreas, setCollapsedAreas] = useState<Set<string>>(new Set());
+  const [collapsedAreas, setCollapsedAreas] = useState<Set<string>>(
+    () => new Set(items.map(i => i.area))
+  );
   const popupRef = useRef<HTMLDivElement>(null);
 
   const { elementos, areaGroups, totalsSolicitado, totalsAprobado } = useMemo(() => {
@@ -224,16 +226,14 @@ const GridView: React.FC<GridViewProps> = ({ items, readOnly, onUpdateItem }) =>
             })}
           </tbody>
           <tfoot>
-            <tr className="gv-total-row gv-total-sol">
-              <td className="gv-td gv-total-label" colSpan={2}>Solicitado</td>
-              {totalsSolicitado.map((t, i) => (
-                <td key={i} className="gv-td gv-cell-total-sol">{t}</td>
-              ))}
-            </tr>
-            <tr className="gv-total-row gv-total-apr">
-              <td className="gv-td gv-total-label" colSpan={2}>Aprobado</td>
-              {totalsAprobado.map((t, i) => (
-                <td key={i} className="gv-td gv-cell-total-apr">{t || '—'}</td>
+            <tr className="gv-total-row">
+              <td className="gv-td gv-total-label" colSpan={2}>Total</td>
+              {elementos.map((_, i) => (
+                <td key={i} className="gv-td gv-cell-total">
+                  <span className="gv-tot-apr">{totalsAprobado[i]}</span>
+                  <span className="gv-tot-sep">/</span>
+                  <span className="gv-tot-sol">{totalsSolicitado[i]}</span>
+                </td>
               ))}
             </tr>
           </tfoot>
