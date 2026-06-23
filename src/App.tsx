@@ -57,17 +57,17 @@ function App() {
     renameSolicitante,
     approveAll,
     resetAll,
-    clearAll,
     manualSave,
   } = useRequisicion(role ?? undefined);
 
   const { revisiones, addRevision, updateRevision } = useRevisiones();
 
+  // Guarda snapshot y restaura tabla a datos iniciales (nunca deja la tabla en blanco)
   const handleCloseRevision = useCallback(() => {
     if (items.length === 0) return;
     addRevision(items);
-    void clearAll();
-  }, [items, addRevision, clearAll]);
+    void resetAll();
+  }, [items, addRevision, resetAll]);
 
   if (!passed) return <LandingPage onEnter={() => setPassed(true)} />;
   if (authLoading) return <LoadingScreen />;
@@ -77,7 +77,35 @@ function App() {
   const canApprove = role === 'gerencia';
 
   return (
-    <div className="app-layout">
+    <div className="app-wrapper">
+      <Header
+        reportStatus={reportStatus}
+        reportDate={reportDate}
+        userEmail={role ?? undefined}
+        userRole={role}
+        onSignOut={() => void signOut()}
+      />
+      <ExecutiveMessage />
+      <ProgressSummary items={items} />
+      <ApprovalTable
+        items={items}
+        canApprove={canApprove}
+        onUpdateItem={updateItem}
+        onAddItem={addItem}
+        onDeleteItem={deleteItem}
+        onRenameArea={renameArea}
+        onRenameSolicitante={renameSolicitante}
+        onApproveAll={approveAll}
+        onResetAll={() => void resetAll()}
+      />
+      <SummaryCards items={items} />
+      <ImportExcelButton onAddItem={addItem} />
+      <ExportButton
+        items={items}
+        syncStatus={syncStatus}
+        role={role}
+        onSave={manualSave}
+      />
       {canApprove && (
         <RevisionesPanel
           revisiones={revisiones}
@@ -86,36 +114,6 @@ function App() {
           onUpdateRevision={updateRevision}
         />
       )}
-      <div className="app-main">
-        <Header
-          reportStatus={reportStatus}
-          reportDate={reportDate}
-          userEmail={role ?? undefined}
-          userRole={role}
-          onSignOut={() => void signOut()}
-        />
-        <ExecutiveMessage />
-        <ProgressSummary items={items} />
-        <ApprovalTable
-          items={items}
-          canApprove={canApprove}
-          onUpdateItem={updateItem}
-          onAddItem={addItem}
-          onDeleteItem={deleteItem}
-          onRenameArea={renameArea}
-          onRenameSolicitante={renameSolicitante}
-          onApproveAll={approveAll}
-          onResetAll={() => void resetAll()}
-        />
-        <SummaryCards items={items} />
-        <ImportExcelButton onAddItem={addItem} />
-        <ExportButton
-          items={items}
-          syncStatus={syncStatus}
-          role={role}
-          onSave={manualSave}
-        />
-      </div>
     </div>
   );
 }
