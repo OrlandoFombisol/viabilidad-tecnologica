@@ -1,0 +1,119 @@
+.grid-view-wrap {
+  margin-top: 8px;
+}
+
+.grid-view-scroll {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #d0d9e8;
+  box-shadow: 0 2px 8px rgba(37,99,168,.07);
+}
+
+.grid-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 600px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+}
+
+/* Header */
+.gv-th {
+  background: #1a3a5c;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+  padding: 10px 8px;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255,255,255,.15);
+  letter-spacing: 0.02em;
+  font-size: 0.73rem;
+}
+
+.gv-th:first-child,
+.gv-th:nth-child(2) {
+  text-align: left;
+}
+
+.gv-col-area { min-width: 140px; padding-left: 14px; }
+.gv-col-user { min-width: 160px; padding-left: 10px; }
+.gv-col-item { width: 72px; }
+
+/* Body cells */
+.gv-td {
+  border: 1px solid #d0d9e8;
+  padding: 7px 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.gv-cell-area {
+  text-align: left;
+  padding-left: 14px;
+  font-weight: 600;
+  font-size: 0.73rem;
+  color: #1a3a5c;
+  background: #f0f5fb;
+  white-space: nowrap;
+}
+
+.gv-cell-user {
+  text-align: left;
+  padding-left: 10px;
+  color: #334155;
+  font-size: 0.74rem;
+  white-space: nowrap;
+  background: #fff;
+}
+
+/* Value cells */
+.gv-cell-val {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.gv-has {
+  background: #c6efce;
+  color: #1a5c2a;
+}
+
+.gv-empty {
+  background: #ffc7ce;
+  color: #9b1c1c;
+}
+
+/* Total row */
+.gv-total-row {
+  background: #e2f0d9;
+}
+
+.gv-total-row .gv-td {
+  font-weight: 800;
+  color: #1a5c2a;
+  font-size: 0.78rem;
+  border-top: 2px solid #1a3a5c;
+}
+
+.gv-total-row td:first-child {
+  text-align: left;
+  padding-left: 14px;
+  letter-spacing: 0.05em;
+  text-transform: lowercase;
+}
+
+.gv-cell-total {
+  background: #a9d18e;
+  color: #1a3a5c;
+}
+
+/* Zebra striping on rows */
+.grid-table tbody tr:nth-child(even) .gv-cell-area,
+.grid-table tbody tr:nth-child(even) .gv-cell-user {
+  background: #f8fafc;
+}
+
+@media (max-width: 640px) {
+  .gv-col-area { min-width: 100px; }
+  .gv-col-user { min-width: 110px; }
+  .gv-col-item { width: 52px; }
+}
