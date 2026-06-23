@@ -6,7 +6,8 @@ import { initialItems } from '../data/initialData';
 
 type SolicitudInsert = Database['public']['Tables']['solicitudes']['Insert'];
 
-const STORAGE_KEY = 'viabilidad_tecnologica_v2';
+const STORAGE_KEY  = 'viabilidad_tecnologica_v2';
+const CLEARED_KEY  = 'vt_cleared';
 
 export type SyncStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'error';
 
@@ -141,6 +142,11 @@ export function useRequisicion(userEmail: string | null | undefined) {
       }
 
       if (!data || data.length === 0) {
+        // Tabla limpia intencionalmente tras cierre de revisión — no resembrar
+        if (localStorage.getItem(CLEARED_KEY)) {
+          if (!cancelled) { setItems([]); markSaved(); setDbReady(true); }
+          return;
+        }
         // Primera ejecución: sembrar datos iniciales (idempotente)
         const rows = initialItems.map(i => itemToRow(i, null));
         const { error: seedErr } = await supabase
@@ -291,6 +297,18 @@ export function useRequisicion(userEmail: string | null | undefined) {
     else markSaved();
   }, [markSaved]);
 
+  const clearAll = useCallback(async () => {
+    const ids = itemsRef.current.map(i => i.id);
+    setItems([]);
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.setItem(CLEARED_KEY, '1');
+    if (ids.length === 0) { markSaved(); return; }
+    setSyncStatus('saving');
+    const { error } = await supabase.from('solicitudes').delete().in('id', ids);
+    if (error) setSyncStatus('error');
+    else markSaved();
+  }, [markSaved]);
+
   const manualSave = useCallback(() => {
     void saveAll(itemsRef.current);
   }, [saveAll]);
@@ -306,6 +324,7 @@ export function useRequisicion(userEmail: string | null | undefined) {
     renameSolicitante,
     approveAll,
     resetAll,
+    clearAll,
     manualSave,
   };
 }

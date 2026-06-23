@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { ReportStatus } from './types';
 import { useAuth } from './contexts/AuthContext';
 import { useRequisicion } from './hooks/useRequisicion';
+import { useRevisiones } from './hooks/useRevisiones';
 import Header from './components/Header';
 import ExecutiveMessage from './components/ExecutiveMessage';
 import SummaryCards from './components/SummaryCards';
 import ProgressSummary from './components/ProgressSummary';
 import ApprovalTable from './components/ApprovalTable';
 import ExportButton from './components/ExportButton';
+import RevisionesPanel from './components/RevisionesPanel';
 import LoginPage from './components/LoginPage';
 import LandingPage from './components/LandingPage';
 import './styles/global.css';
@@ -54,52 +56,65 @@ function App() {
     renameSolicitante,
     approveAll,
     resetAll,
+    clearAll,
     manualSave,
   } = useRequisicion(role ?? undefined);
 
-  // Pantalla inicial animada — siempre se muestra primero
-  if (!passed) {
-    return <LandingPage onEnter={() => setPassed(true)} />;
-  }
+  const { revisiones, addRevision, deleteRevision } = useRevisiones();
 
-  // Auth cargando
+  const handleCloseRevision = useCallback(() => {
+    if (items.length === 0) return;
+    addRevision(items);
+    void clearAll();
+  }, [items, addRevision, clearAll]);
+
+  if (!passed) return <LandingPage onEnter={() => setPassed(true)} />;
   if (authLoading) return <LoadingScreen />;
-
-  // No autenticado
   if (role === null) return <LoginPage />;
 
   const reportStatus = deriveReportStatus(items);
   const canApprove = role === 'gerencia';
 
   return (
-    <div className="app-wrapper">
-      <Header
-        reportStatus={reportStatus}
-        reportDate={reportDate}
-        userEmail={role ?? undefined}
-        userRole={role}
-        onSignOut={() => void signOut()}
-      />
-      <ExecutiveMessage />
-      <ProgressSummary items={items} />
-      <ApprovalTable
-        items={items}
-        canApprove={canApprove}
-        onUpdateItem={updateItem}
-        onAddItem={addItem}
-        onDeleteItem={deleteItem}
-        onRenameArea={renameArea}
-        onRenameSolicitante={renameSolicitante}
-        onApproveAll={approveAll}
-        onResetAll={() => void resetAll()}
-      />
-      <SummaryCards items={items} />
-      <ExportButton
-        items={items}
-        syncStatus={syncStatus}
-        role={role}
-        onSave={manualSave}
-      />
+    <div className="app-layout">
+      <div className="app-main">
+        <Header
+          reportStatus={reportStatus}
+          reportDate={reportDate}
+          userEmail={role ?? undefined}
+          userRole={role}
+          onSignOut={() => void signOut()}
+        />
+        <ExecutiveMessage />
+        <ProgressSummary items={items} />
+        <ApprovalTable
+          items={items}
+          canApprove={canApprove}
+          onUpdateItem={updateItem}
+          onAddItem={addItem}
+          onDeleteItem={deleteItem}
+          onRenameArea={renameArea}
+          onRenameSolicitante={renameSolicitante}
+          onApproveAll={approveAll}
+          onResetAll={() => void resetAll()}
+        />
+        <SummaryCards items={items} />
+        <ExportButton
+          items={items}
+          syncStatus={syncStatus}
+          role={role}
+          onSave={manualSave}
+        />
+      </div>
+
+      {canApprove && (
+        <RevisionesPanel
+          revisiones={revisiones}
+          currentItemCount={items.length}
+          onCloseRevision={handleCloseRevision}
+          onDeleteRevision={deleteRevision}
+        />
+      )}
     </div>
   );
 }

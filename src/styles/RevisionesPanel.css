@@ -1,0 +1,200 @@
+@import './variables.css';
+
+.rp-panel {
+  width: 252px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -3px 0 12px rgba(0,0,0,.04);
+}
+
+/* Cabecera */
+.rp-header {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+}
+
+.rp-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: .75rem;
+  font-weight: 800;
+  color: rgba(255,255,255,.92);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+/* Sección Cerrar revisión */
+.rp-close-section {
+  padding: 16px 16px 14px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  background: #FAFBFD;
+}
+
+.rp-close-desc {
+  font-size: .69rem;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+
+.rp-close-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 14px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: .77rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  letter-spacing: .01em;
+  transition: background .15s, transform .12s, box-shadow .15s;
+}
+.rp-close-btn:hover:not(.rp-disabled) {
+  background: var(--color-primary-dark);
+  box-shadow: 0 3px 10px rgba(37,99,235,.28);
+  transform: translateY(-1px);
+}
+.rp-close-btn.rp-confirming {
+  background: var(--color-denied);
+  animation: rp-pulse 1s ease infinite alternate;
+}
+.rp-close-btn.rp-disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+@keyframes rp-pulse {
+  from { box-shadow: 0 0 0 0 rgba(220,38,38,.45); }
+  to   { box-shadow: 0 0 0 6px rgba(220,38,38,.0); }
+}
+
+.rp-confirm-hint {
+  margin-top: 7px;
+  font-size: .63rem;
+  color: var(--color-denied);
+  line-height: 1.45;
+  text-align: center;
+}
+
+/* Historial */
+.rp-history {
+  flex: 1;
+  padding: 14px 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rp-history-label {
+  font-size: .6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.rp-empty {
+  font-size: .72rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: 24px 0 8px;
+  line-height: 1.55;
+}
+
+.rp-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.rp-card {
+  position: relative;
+  background: #F4F7FB;
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-primary-light);
+  border-radius: var(--radius-sm);
+  padding: 9px 30px 9px 11px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, box-shadow .15s;
+}
+.rp-card:hover {
+  background: #EEF3FA;
+  border-color: var(--color-primary-light);
+  border-left-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(37,99,235,.10);
+}
+
+.rp-card-date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.rp-card-time {
+  font-size: .6rem;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.rp-card-meta {
+  display: flex;
+  gap: 6px;
+  font-size: .64rem;
+  align-items: center;
+}
+
+.rp-card-total { color: var(--color-text-muted); }
+.rp-card-apr   { color: var(--color-approved); font-weight: 700; }
+.rp-card-neg   { color: var(--color-denied); font-weight: 700; }
+
+.rp-card-del {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 18px;
+  height: 18px;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background .12s, color .12s;
+}
+.rp-card-del:hover {
+  background: rgba(220,38,38,.12);
+  color: var(--color-denied);
+}
+
+@media (max-width: 900px) {
+  .rp-panel { display: none; }
+}

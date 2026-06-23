@@ -25,6 +25,20 @@ body {
   padding: 0 28px 80px;
 }
 
+/* ── Layout con panel lateral de revisiones ── */
+.app-layout {
+  display: flex;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  max-width: 1440px;
+  padding: 0 28px 80px;
+}
+
 /* ── Estructura tipográfica de sección ── */
 .section-eyebrow {
   display: block;
