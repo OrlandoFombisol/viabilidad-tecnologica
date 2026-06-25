@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { ReportStatus } from './types';
+import type { ReportStatus, TechItem } from './types';
 import { useAuth } from './contexts/AuthContext';
 import { useRequisicion } from './hooks/useRequisicion';
 import { useRevisiones } from './hooks/useRevisiones';
@@ -57,7 +57,6 @@ function App() {
     renameSolicitante,
     approveAll,
     resetAll,
-    clearAll,
     replaceItems,
     manualSave,
   } = useRequisicion(role ?? undefined);
@@ -74,7 +73,7 @@ function App() {
     addRevision(toSnapshot);
 
     // Construir la tabla del siguiente ciclo
-    const nextItems: import('./types').TechItem[] = [];
+    const nextItems: TechItem[] = [];
     items.forEach(item => {
       if (item.estado === 'Aprobado') return; // sale de la tabla
       if (item.estado === 'Aprobado parcial') {
@@ -99,11 +98,6 @@ function App() {
 
     void replaceItems(nextItems);
   }, [items, addRevision, replaceItems]);
-
-  // Limpia la tabla para iniciar nueva solicitud en blanco
-  const handleNuevaSolicitud = useCallback(() => {
-    void clearAll();
-  }, [clearAll]);
 
   const approvedItemCount = items.filter(i =>
     i.estado === 'Aprobado' || i.estado === 'Aprobado parcial'
@@ -151,7 +145,6 @@ function App() {
           revisiones={revisiones}
           approvedItemCount={approvedItemCount}
           onCloseRevision={handleCloseRevision}
-          onNuevaSolicitud={handleNuevaSolicitud}
           onUpdateRevision={updateRevision}
         />
       )}

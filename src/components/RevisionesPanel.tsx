@@ -8,45 +8,27 @@ interface Props {
   revisiones: Revision[];
   approvedItemCount: number;
   onCloseRevision: () => void;
-  onNuevaSolicitud: () => void;
   onUpdateRevision: (id: string, items: TechItem[]) => void;
 }
 
 const RevisionesPanel: React.FC<Props> = ({
-  revisiones, approvedItemCount, onCloseRevision, onNuevaSolicitud, onUpdateRevision,
+  revisiones, approvedItemCount, onCloseRevision, onUpdateRevision,
 }) => {
-  const [expanded,       setExpanded]       = useState(false);
-  const [confirmClose,   setConfirmClose]   = useState(false);
-  const [confirmNueva,   setConfirmNueva]   = useState(false);
-  const [selected,       setSelected]       = useState<Revision | null>(null);
-  const timerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const timerRef2 = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [expanded,     setExpanded]     = useState(false);
+  const [confirmSave,  setConfirmSave]  = useState(false);
+  const [selected,     setSelected]     = useState<Revision | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleCloseClick = (e: React.MouseEvent) => {
+  const handleSaveClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirmClose) {
+    if (confirmSave) {
       onCloseRevision();
-      setConfirmClose(false);
+      setConfirmSave(false);
       if (timerRef.current) clearTimeout(timerRef.current);
     } else {
-      setConfirmClose(true);
-      setConfirmNueva(false);
+      setConfirmSave(true);
       if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = window.setTimeout(() => setConfirmClose(false), 4500);
-    }
-  };
-
-  const handleNuevaClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (confirmNueva) {
-      onNuevaSolicitud();
-      setConfirmNueva(false);
-      if (timerRef2.current) clearTimeout(timerRef2.current);
-    } else {
-      setConfirmNueva(true);
-      setConfirmClose(false);
-      if (timerRef2.current) clearTimeout(timerRef2.current);
-      timerRef2.current = window.setTimeout(() => setConfirmNueva(false), 4500);
+      timerRef.current = window.setTimeout(() => setConfirmSave(false), 4500);
     }
   };
 
@@ -64,18 +46,16 @@ const RevisionesPanel: React.FC<Props> = ({
           <div className="rp-list-panel">
             {revisiones.length === 0 ? (
               <p className="rp-no-items">
-                Aún no se ha cerrado ninguna revisión. Haz clic en
-                <strong> Cerrar revisión</strong> para guardar el estado actual y comenzar un nuevo ciclo.
+                Aún no se ha guardado ninguna revisión. Aprueba los ítems y haz clic en
+                <strong> Guardar revisión</strong> para registrar lo aprobado y dejar pendiente el resto.
               </p>
             ) : (
               <div className="rp-cards-grid">
                 {revisiones.map(rev => {
-                  const aprobados  = rev.items.filter(i => i.estado === 'Aprobado').length;
-                  const parciales  = rev.items.filter(i => i.estado === 'Aprobado parcial').length;
-                  const negados    = rev.items.filter(i => i.estado === 'Negado').length;
-                  const pendientes = rev.items.filter(i => i.estado === 'Pendiente').length;
-                  const total      = rev.items.length;
-                  const pct        = total > 0 ? Math.round(((aprobados + parciales) / total) * 100) : 0;
+                  const aprobados = rev.items.filter(i => i.estado === 'Aprobado').length;
+                  const parciales = rev.items.filter(i => i.estado === 'Aprobado parcial').length;
+                  const total     = rev.items.length;
+                  const pct       = total > 0 ? Math.round(((aprobados + parciales) / total) * 100) : 0;
                   return (
                     <button key={rev.id} className="rp-card" onClick={() => setSelected(rev)}>
                       <div className="rp-card-date">
@@ -95,10 +75,8 @@ const RevisionesPanel: React.FC<Props> = ({
                         <span className="rp-card-pct">{pct}%</span>
                       </div>
                       <div className="rp-card-badges">
-                        {aprobados  > 0 && <span className="rp-b rp-b-apr">{aprobados} apr.</span>}
-                        {parciales  > 0 && <span className="rp-b rp-b-parc">{parciales} parc.</span>}
-                        {negados    > 0 && <span className="rp-b rp-b-neg">{negados} neg.</span>}
-                        {pendientes > 0 && <span className="rp-b rp-b-pend">{pendientes} pend.</span>}
+                        {aprobados > 0 && <span className="rp-b rp-b-apr">{aprobados} apr.</span>}
+                        {parciales > 0 && <span className="rp-b rp-b-parc">{parciales} parc.</span>}
                         <span className="rp-b rp-b-total">{total} ítems</span>
                       </div>
                       <span className="rp-card-cta">Abrir revisión →</span>
@@ -127,30 +105,23 @@ const RevisionesPanel: React.FC<Props> = ({
           </div>
 
           <div className="rp-bar-right">
-            {(confirmClose || confirmNueva) && (
+            {confirmSave && (
               <span className="rp-confirm-label">¿Confirmar? —</span>
             )}
             <button
-              className={`rp-close-btn rp-nueva-btn${confirmNueva ? ' rp-confirming' : ''}`}
-              onClick={handleNuevaClick}
-              title="Limpiar tabla para ingresar nuevas solicitudes"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="12" height="12">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-              {confirmNueva ? '¡Confirmar!' : 'Nueva solicitud'}
-            </button>
-            <button
-              className={`rp-close-btn${confirmClose ? ' rp-confirming' : ''}${approvedItemCount === 0 ? ' rp-disabled' : ''}`}
-              onClick={handleCloseClick}
+              className={`rp-close-btn${confirmSave ? ' rp-confirming' : ''}${approvedItemCount === 0 ? ' rp-disabled' : ''}`}
+              onClick={handleSaveClick}
               disabled={approvedItemCount === 0}
-              title={approvedItemCount === 0 ? 'Aprueba al menos un ítem para cerrar la revisión' : `Guardar ${approvedItemCount} ítem${approvedItemCount !== 1 ? 's' : ''} aprobado${approvedItemCount !== 1 ? 's' : ''} y preparar siguiente ciclo`}
+              title={
+                approvedItemCount === 0
+                  ? 'Aprueba al menos un ítem para guardar la revisión'
+                  : `Guardar ${approvedItemCount} ítem${approvedItemCount !== 1 ? 's' : ''} aprobado${approvedItemCount !== 1 ? 's' : ''} — los negados y faltantes quedan en tabla`
+              }
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="12" height="12">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
-              {confirmClose ? '¡Confirmar cierre!' : 'Cerrar revisión'}
+              {confirmSave ? '¡Confirmar!' : 'Guardar revisión'}
             </button>
 
             <svg
