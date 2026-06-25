@@ -291,6 +291,26 @@ export function useRequisicion(userEmail: string | null | undefined) {
     else markSaved();
   }, [markSaved]);
 
+  const replaceItems = useCallback(async (newItems: TechItem[]) => {
+    const oldIds = new Set(itemsRef.current.map(i => i.id));
+    const newIds = new Set(newItems.map(i => i.id));
+    const toDelete = [...oldIds].filter(id => !newIds.has(id));
+
+    setItems(newItems);
+    setSyncStatus('saving');
+
+    if (toDelete.length > 0) {
+      await supabase.from('solicitudes').delete().in('id', toDelete);
+    }
+    if (newItems.length > 0) {
+      const { error } = await supabase
+        .from('solicitudes')
+        .upsert(newItems.map(i => itemToRow(i, userEmailRef.current)), { onConflict: 'id' });
+      if (error) { setSyncStatus('error'); return; }
+    }
+    markSaved();
+  }, [markSaved]);
+
   const clearAll = useCallback(async () => {
     const ids = itemsRef.current.map(i => i.id);
     setItems([]);
@@ -318,6 +338,7 @@ export function useRequisicion(userEmail: string | null | undefined) {
     approveAll,
     resetAll,
     clearAll,
+    replaceItems,
     manualSave,
   };
 }

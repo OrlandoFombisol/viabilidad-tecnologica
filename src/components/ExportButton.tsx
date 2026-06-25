@@ -30,9 +30,14 @@ const ExportButton: React.FC<ExportButtonProps> = ({ items, syncStatus, role, on
 
   const handleConfirm = () => {
     setShowConfirm(false);
+    const approved = items.filter(i => i.estado === 'Aprobado' || i.estado === 'Aprobado parcial');
+    if (approved.length === 0) {
+      showToast('No hay ítems aprobados por Gerencia para exportar.', 'error');
+      return;
+    }
     try {
-      exportToExcel(items);
-      showToast('Excel completo generado con todas las áreas y solicitantes.', 'success');
+      exportToExcel(approved);
+      showToast(`Excel generado con ${approved.length} ítem${approved.length !== 1 ? 's' : ''} aprobado${approved.length !== 1 ? 's' : ''} por Gerencia.`, 'success');
     } catch (e: unknown) {
       showToast(e instanceof Error ? e.message : 'Error al generar el archivo.', 'error');
     }
@@ -100,12 +105,13 @@ const ExportButton: React.FC<ExportButtonProps> = ({ items, syncStatus, role, on
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" />
               </svg>
             </div>
-            <h3 className="modal-title">Generar revisión completa</h3>
+            <h3 className="modal-title">Generar Excel para Compras</h3>
             <p className="modal-body">
-              El archivo incluirá las <strong>{items.length} solicitudes de todas las áreas y
-              solicitantes</strong>. También contendrá una hoja separada con los{' '}
-              <strong>{approvedCount} registros aprobados para Compras</strong>.
-              {pendingCount > 0 && <> Actualmente hay <strong>{pendingCount} decisiones pendientes</strong>, que se conservarán identificadas en la revisión completa.</>}
+              El archivo incluirá únicamente los{' '}
+              <strong>{approvedCount} ítem{approvedCount !== 1 ? 's' : ''} aprobado{approvedCount !== 1 ? 's' : ''} por Gerencia</strong>{' '}
+              (aprobación total o parcial).
+              {pendingCount > 0 && <> Los <strong>{pendingCount} ítems pendientes</strong> y los negados no se incluirán.</>}
+              {approvedCount === 0 && <> <strong>Aún no hay ítems aprobados.</strong> Aprueba al menos uno antes de exportar.</>}
             </p>
             <div className="modal-actions">
               <button className="btn btn-outline" onClick={() => setShowConfirm(false)}>

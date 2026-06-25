@@ -75,12 +75,14 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
               <button className="btn btn-success" onClick={onApproveAll}>Aprobar todas</button>
             </>
           )}
-          <button className="btn btn-add" onClick={() => setModal({ mode: 'add' })}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14" aria-hidden="true">
-              <path d="M12 5v14M5 12h14" />
-            </svg>
-            Nueva solicitud
-          </button>
+          {!canApprove && (
+            <button className="btn btn-add" onClick={() => setModal({ mode: 'add' })}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14" aria-hidden="true">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Nueva solicitud
+            </button>
+          )}
         </div>
       </div>
 

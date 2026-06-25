@@ -58,22 +58,56 @@ function App() {
     approveAll,
     resetAll,
     clearAll,
+    replaceItems,
     manualSave,
   } = useRequisicion(role ?? undefined);
 
   const { revisiones, addRevision, updateRevision } = useRevisiones();
 
-  // Guarda snapshot y restaura la tabla a los datos iniciales
   const handleCloseRevision = useCallback(() => {
-    if (items.length === 0) return;
-    addRevision(items);
-    void resetAll();
-  }, [items, addRevision, resetAll]);
+    // Solo los aprobados (total o parcial) van al snapshot
+    const toSnapshot = items.filter(i =>
+      i.estado === 'Aprobado' || i.estado === 'Aprobado parcial'
+    );
+    if (toSnapshot.length === 0) return;
 
-  // Limpia la tabla completamente para iniciar una nueva solicitud en blanco
+    addRevision(toSnapshot);
+
+    // Construir la tabla del siguiente ciclo
+    const nextItems: import('./types').TechItem[] = [];
+    items.forEach(item => {
+      if (item.estado === 'Aprobado') return; // sale de la tabla
+      if (item.estado === 'Aprobado parcial') {
+        const remaining = item.cantidadSolicitada - (item.cantidadAprobada ?? 0);
+        if (remaining > 0) {
+          nextItems.push({
+            ...item,
+            cantidadSolicitada: remaining,
+            cantidadAprobada: 0,
+            estado: 'Pendiente',
+            comentarioGerencia: '',
+          });
+        }
+        return;
+      }
+      if (item.estado === 'Negado') {
+        nextItems.push({ ...item, estado: 'Pendiente', cantidadAprobada: 0, comentarioGerencia: '' });
+        return;
+      }
+      nextItems.push({ ...item }); // Pendiente: queda igual
+    });
+
+    void replaceItems(nextItems);
+  }, [items, addRevision, replaceItems]);
+
+  // Limpia la tabla para iniciar nueva solicitud en blanco
   const handleNuevaSolicitud = useCallback(() => {
     void clearAll();
   }, [clearAll]);
+
+  const approvedItemCount = items.filter(i =>
+    i.estado === 'Aprobado' || i.estado === 'Aprobado parcial'
+  ).length;
 
   if (!passed) return <LandingPage onEnter={() => setPassed(true)} />;
   if (authLoading) return <LoadingScreen />;
@@ -115,7 +149,7 @@ function App() {
       {canApprove && (
         <RevisionesPanel
           revisiones={revisiones}
-          currentItemCount={items.length}
+          approvedItemCount={approvedItemCount}
           onCloseRevision={handleCloseRevision}
           onNuevaSolicitud={handleNuevaSolicitud}
           onUpdateRevision={updateRevision}

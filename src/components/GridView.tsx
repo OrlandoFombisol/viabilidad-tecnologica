@@ -275,12 +275,14 @@ const GridView: React.FC<GridViewProps> = ({
                         ) : (
                           <span className="gv-area-label-row">
                             <strong>{area}</strong>
-                            <button className="gv-rename-btn" onClick={e => startEditArea(area, e)} title="Renombrar área">
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                              </svg>
-                            </button>
+                            {!canApprove && (
+                              <button className="gv-rename-btn" onClick={e => startEditArea(area, e)} title="Renombrar área">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
+                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                </svg>
+                              </button>
+                            )}
                           </span>
                         )}
 
@@ -327,24 +329,31 @@ const GridView: React.FC<GridViewProps> = ({
                         ) : (
                           <span className="gv-user-label-row">
                             <span className="gv-user-name">{solicitante}</span>
-                            <button className="gv-rename-btn gv-person-rename-btn" onClick={e => startEditPerson(area, solicitante, e)} title="Renombrar">
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="10" height="10">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                              </svg>
-                            </button>
-                            <button className="gv-edit-item-btn" onClick={() => { const first = Array.from(byEl.values())[0]; if (first) onOpenEditModal(first); }} title="Editar solicitud">
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="10" height="10">
-                                <circle cx="12" cy="12" r="3" />
-                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
-                              </svg>
-                            </button>
+                            {!canApprove && (
+                              <>
+                                <button className="gv-rename-btn gv-person-rename-btn" onClick={e => startEditPerson(area, solicitante, e)} title="Renombrar">
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="10" height="10">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                  </svg>
+                                </button>
+                                <button className="gv-edit-item-btn" onClick={() => { const first = Array.from(byEl.values())[0]; if (first) onOpenEditModal(first); }} title="Editar solicitud">
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="10" height="10">
+                                    <circle cx="12" cy="12" r="3" />
+                                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
+                                  </svg>
+                                </button>
+                              </>
+                            )}
                           </span>
                         )}
                       </td>
                       {elementos.map(el => {
                         const item = byEl.get(el);
                         if (!item) {
+                          if (canApprove) {
+                            return <td key={el} className="gv-td gv-cell-val gv-empty" />;
+                          }
                           return (
                             <td key={el} className="gv-td gv-cell-val gv-empty gv-clickable"
                               title={`Agregar ${el} para ${solicitante}`}
@@ -366,13 +375,15 @@ const GridView: React.FC<GridViewProps> = ({
                                 {item.estado === 'Aprobado' ? '✓' : item.estado === 'Negado' ? '✗' : '½'}
                               </span>
                             )}
-                            <button
-                              className={`gv-cell-delete-btn${isPendingDel ? ' gv-delete-pending' : ''}`}
-                              onClick={e => handleCellDelete(item.id, e)}
-                              title={isPendingDel ? 'Confirmar eliminación' : 'Eliminar registro'}
-                            >
-                              {isPendingDel ? '?' : '×'}
-                            </button>
+                            {!canApprove && (
+                              <button
+                                className={`gv-cell-delete-btn${isPendingDel ? ' gv-delete-pending' : ''}`}
+                                onClick={e => handleCellDelete(item.id, e)}
+                                title={isPendingDel ? 'Confirmar eliminación' : 'Eliminar registro'}
+                              >
+                                {isPendingDel ? '?' : '×'}
+                              </button>
+                            )}
                           </td>
                         );
                       })}

@@ -57,49 +57,34 @@ function createDetailSheet(items: TechItem[], title: string, subtitle: string): 
 
 export function exportToExcel(items: TechItem[]): void {
   const workbook = XLSX.utils.book_new();
-  const approved = items.filter(
-    (item) => item.estado === 'Aprobado' || item.estado === 'Aprobado parcial'
-  );
 
   XLSX.utils.book_append_sheet(
     workbook,
     createDetailSheet(
       items,
-      'REVISIÓN COMPLETA DE VIABILIDAD TECNOLÓGICA',
-      'Incluye todas las áreas, solicitantes y decisiones, incluso las pendientes.'
+      'CONSOLIDADO APROBADO POR GERENCIA — PARA COMPRAS',
+      'Incluye únicamente solicitudes aprobadas total o parcialmente por Gerencia.'
     ),
-    'Revisión completa'
+    'Aprobados Gerencia'
   );
 
-  if (approved.length > 0) {
-    XLSX.utils.book_append_sheet(
-      workbook,
-      createDetailSheet(
-        approved,
-        'CONSOLIDADO APROBADO PARA COMPRAS',
-        'Incluye únicamente solicitudes aprobadas total o parcialmente por Gerencia.'
-      ),
-      'Aprobados Compras'
-    );
-  }
-
+  const totalAprobadas   = items.filter(i => i.estado === 'Aprobado').length;
+  const totalParciales   = items.filter(i => i.estado === 'Aprobado parcial').length;
   const summaryData = [
-    ['RESUMEN DE LA REVISIÓN'],
+    ['RESUMEN DE APROBACIÓN GERENCIAL'],
     [],
-    ['Áreas incluidas', new Set(items.map((item) => item.area)).size],
-    ['Solicitantes incluidos', new Set(items.map((item) => `${item.area}|${item.solicitante}`)).size],
-    ['Solicitudes evaluadas', items.length],
-    ['Aprobadas', items.filter((item) => item.estado === 'Aprobado').length],
-    ['Aprobadas parcialmente', items.filter((item) => item.estado === 'Aprobado parcial').length],
-    ['Negadas', items.filter((item) => item.estado === 'Negado').length],
-    ['Pendientes', items.filter((item) => item.estado === 'Pendiente').length],
+    ['Áreas con ítems aprobados', new Set(items.map(i => i.area)).size],
+    ['Solicitantes con aprobación', new Set(items.map(i => `${i.area}|${i.solicitante}`)).size],
+    ['Total ítems aprobados', items.length],
+    ['  Aprobación total', totalAprobadas],
+    ['  Aprobación parcial', totalParciales],
     [],
-    ['Cantidad total solicitada', items.reduce((sum, item) => sum + item.cantidadSolicitada, 0)],
-    ['Cantidad total aprobada', items.reduce((sum, item) => sum + item.cantidadAprobada, 0)],
+    ['Cantidad total solicitada', items.reduce((s, i) => s + i.cantidadSolicitada, 0)],
+    ['Cantidad total aprobada',   items.reduce((s, i) => s + i.cantidadAprobada,   0)],
   ];
   const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
   summarySheet['!cols'] = [{ wch: 34 }, { wch: 18 }];
   XLSX.utils.book_append_sheet(workbook, summarySheet, 'Resumen');
 
-  XLSX.writeFile(workbook, 'revision_viabilidad_tecnologica_completa.xlsx');
+  XLSX.writeFile(workbook, 'aprobados_gerencia_viabilidad.xlsx');
 }

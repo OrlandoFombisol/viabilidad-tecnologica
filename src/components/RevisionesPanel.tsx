@@ -6,14 +6,14 @@ import '../styles/RevisionesPanel.css';
 
 interface Props {
   revisiones: Revision[];
-  currentItemCount: number;
+  approvedItemCount: number;
   onCloseRevision: () => void;
   onNuevaSolicitud: () => void;
   onUpdateRevision: (id: string, items: TechItem[]) => void;
 }
 
 const RevisionesPanel: React.FC<Props> = ({
-  revisiones, currentItemCount, onCloseRevision, onNuevaSolicitud, onUpdateRevision,
+  revisiones, approvedItemCount, onCloseRevision, onNuevaSolicitud, onUpdateRevision,
 }) => {
   const [expanded,       setExpanded]       = useState(false);
   const [confirmClose,   setConfirmClose]   = useState(false);
@@ -142,10 +142,10 @@ const RevisionesPanel: React.FC<Props> = ({
               {confirmNueva ? '¡Confirmar!' : 'Nueva solicitud'}
             </button>
             <button
-              className={`rp-close-btn${confirmClose ? ' rp-confirming' : ''}${currentItemCount === 0 ? ' rp-disabled' : ''}`}
+              className={`rp-close-btn${confirmClose ? ' rp-confirming' : ''}${approvedItemCount === 0 ? ' rp-disabled' : ''}`}
               onClick={handleCloseClick}
-              disabled={currentItemCount === 0}
-              title={currentItemCount === 0 ? 'No hay ítems en la tabla' : 'Guardar revisión actual y reiniciar tabla'}
+              disabled={approvedItemCount === 0}
+              title={approvedItemCount === 0 ? 'Aprueba al menos un ítem para cerrar la revisión' : `Guardar ${approvedItemCount} ítem${approvedItemCount !== 1 ? 's' : ''} aprobado${approvedItemCount !== 1 ? 's' : ''} y preparar siguiente ciclo`}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="12" height="12">
                 <polyline points="20 6 9 17 4 12"/>
