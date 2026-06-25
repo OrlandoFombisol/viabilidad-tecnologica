@@ -55,7 +55,6 @@ function App() {
     deleteItem,
     renameArea,
     renameSolicitante,
-    approveAll,
     resetAll,
     replaceItems,
   } = useRequisicion(role ?? undefined);
@@ -128,7 +127,6 @@ function App() {
         onDeleteItem={deleteItem}
         onRenameArea={renameArea}
         onRenameSolicitante={renameSolicitante}
-        onApproveAll={approveAll}
         onResetAll={() => void resetAll()}
       />
       <SummaryCards items={items} />

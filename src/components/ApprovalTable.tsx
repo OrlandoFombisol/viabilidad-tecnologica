@@ -12,8 +12,7 @@ interface ApprovalTableProps {
   onDeleteItem: (id: string) => void;
   onRenameArea: (oldArea: string, newArea: string) => void;
   onRenameSolicitante: (area: string, oldName: string, newName: string) => void;
-  onApproveAll: () => void;
-  onResetAll:   () => void;
+  onResetAll: () => void;
 }
 
 type ModalState =
@@ -23,7 +22,7 @@ type ModalState =
 
 const ApprovalTable: React.FC<ApprovalTableProps> = ({
   items, canApprove, onUpdateItem, onAddItem, onDeleteItem,
-  onRenameArea, onRenameSolicitante, onApproveAll, onResetAll,
+  onRenameArea, onRenameSolicitante, onResetAll,
 }) => {
   const areas = useMemo(() => Array.from(new Set(items.map(i => i.area))), [items]);
   const [query, setQuery]               = useState('');
@@ -68,12 +67,9 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
         </div>
         <div className="table-actions">
           {canApprove && (
-            <>
-              <button className="btn btn-secondary" onClick={reset}>
-                {confirmReset ? 'Confirmar limpieza' : 'Limpiar revisión'}
-              </button>
-              <button className="btn btn-success" onClick={onApproveAll}>Aprobar todas</button>
-            </>
+            <button className="btn btn-secondary" onClick={reset}>
+              {confirmReset ? 'Confirmar limpieza' : 'Limpiar revisión'}
+            </button>
           )}
           {!canApprove && (
             <button className="btn btn-add" onClick={() => setModal({ mode: 'add' })}>
