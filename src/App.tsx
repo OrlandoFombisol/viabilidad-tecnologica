@@ -62,10 +62,7 @@ function App() {
   const { revisiones, addRevision, updateRevision } = useRevisiones();
 
   const handleCloseRevision = useCallback(() => {
-    const hasApproved = items.some(i =>
-      i.estado === 'Aprobado' || i.estado === 'Aprobado parcial'
-    );
-    if (!hasApproved) return;
+    if (items.length === 0) return;
 
     // Snapshot con TODOS los ítems y sus decisiones reales
     addRevision(items);
@@ -97,9 +94,6 @@ function App() {
     void replaceItems(nextItems);
   }, [items, addRevision, replaceItems]);
 
-  const approvedItemCount = items.filter(i =>
-    i.estado === 'Aprobado' || i.estado === 'Aprobado parcial'
-  ).length;
 
   if (!passed) return <LandingPage onEnter={() => setPassed(true)} />;
   if (authLoading) return <LoadingScreen />;
@@ -138,7 +132,7 @@ function App() {
       {canApprove && (
         <RevisionesPanel
           revisiones={revisiones}
-          approvedItemCount={approvedItemCount}
+          itemCount={items.length}
           onCloseRevision={handleCloseRevision}
           onUpdateRevision={updateRevision}
         />

@@ -6,13 +6,13 @@ import '../styles/RevisionesPanel.css';
 
 interface Props {
   revisiones: Revision[];
-  approvedItemCount: number;
+  itemCount: number;
   onCloseRevision: () => void;
   onUpdateRevision: (id: string, items: TechItem[]) => void;
 }
 
 const RevisionesPanel: React.FC<Props> = ({
-  revisiones, approvedItemCount, onCloseRevision, onUpdateRevision,
+  revisiones, itemCount, onCloseRevision, onUpdateRevision,
 }) => {
   const [expanded,     setExpanded]     = useState(false);
   const [confirmSave,  setConfirmSave]  = useState(false);
@@ -109,13 +109,13 @@ const RevisionesPanel: React.FC<Props> = ({
               <span className="rp-confirm-label">¿Confirmar? —</span>
             )}
             <button
-              className={`rp-close-btn${confirmSave ? ' rp-confirming' : ''}${approvedItemCount === 0 ? ' rp-disabled' : ''}`}
+              className={`rp-close-btn${confirmSave ? ' rp-confirming' : ''}${itemCount === 0 ? ' rp-disabled' : ''}`}
               onClick={handleSaveClick}
-              disabled={approvedItemCount === 0}
+              disabled={itemCount === 0}
               title={
-                approvedItemCount === 0
-                  ? 'Aprueba al menos un ítem para guardar la revisión'
-                  : `Guardar ${approvedItemCount} ítem${approvedItemCount !== 1 ? 's' : ''} aprobado${approvedItemCount !== 1 ? 's' : ''} — los negados y faltantes quedan en tabla`
+                itemCount === 0
+                  ? 'No hay ítems en la tabla para guardar'
+                  : 'Guardar revisión — los aprobados se consolidan, los negados y faltantes quedan en tabla'
               }
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="12" height="12">
