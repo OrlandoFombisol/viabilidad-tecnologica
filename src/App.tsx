@@ -59,18 +59,19 @@ function App() {
     replaceItems,
   } = useRequisicion(role ?? undefined);
 
-  const { revisiones, addRevision, updateRevision } = useRevisiones();
+  const { revisiones, upsertRevision, updateRevision } = useRevisiones();
 
   const handleCloseRevision = useCallback(() => {
     if (items.length === 0) return;
 
-    // Snapshot con TODOS los ítems y sus decisiones reales
-    addRevision(items);
+    // Acumular en la única revisión solo los ítems aprobados de este ciclo
+    const approved = items.filter(i => i.estado === 'Aprobado' || i.estado === 'Aprobado parcial');
+    if (approved.length > 0) upsertRevision(approved);
 
     // Construir la tabla del siguiente ciclo
     const nextItems: TechItem[] = [];
     items.forEach(item => {
-      if (item.estado === 'Aprobado') return; // sale de la tabla
+      if (item.estado === 'Aprobado') return;
       if (item.estado === 'Aprobado parcial') {
         const remaining = item.cantidadSolicitada - (item.cantidadAprobada ?? 0);
         if (remaining > 0) {
@@ -88,11 +89,11 @@ function App() {
         nextItems.push({ ...item, estado: 'Pendiente', cantidadAprobada: 0, comentarioGerencia: '' });
         return;
       }
-      nextItems.push({ ...item }); // Pendiente: queda igual
+      nextItems.push({ ...item });
     });
 
     void replaceItems(nextItems);
-  }, [items, addRevision, replaceItems]);
+  }, [items, upsertRevision, replaceItems]);
 
 
   if (!passed) return <LandingPage onEnter={() => setPassed(true)} />;
