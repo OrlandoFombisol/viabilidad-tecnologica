@@ -51,5 +51,10 @@ export function useRevisiones() {
     });
   }, []);
 
-  return { revisiones, upsertRevision, updateRevision };
+  const clearRevisiones = useCallback(() => {
+    setRevisiones([]);
+    try { localStorage.removeItem(KEY); } catch { /* quota */ }
+  }, []);
+
+  return { revisiones, upsertRevision, updateRevision, clearRevisiones };
 }

@@ -59,7 +59,7 @@ function App() {
     replaceItems,
   } = useRequisicion(role ?? undefined);
 
-  const { revisiones, upsertRevision, updateRevision } = useRevisiones();
+  const { revisiones, upsertRevision, updateRevision, clearRevisiones } = useRevisiones();
 
   const handleCloseRevision = useCallback(() => {
     if (items.length === 0) return;
@@ -122,7 +122,7 @@ function App() {
         onDeleteItem={deleteItem}
         onRenameArea={renameArea}
         onRenameSolicitante={renameSolicitante}
-        onResetAll={() => void resetAll()}
+        onResetAll={() => { clearRevisiones(); void resetAll(); }}
       />
       <SummaryCards items={items} />
       <ImportExcelButton onAddItem={addItem} />
