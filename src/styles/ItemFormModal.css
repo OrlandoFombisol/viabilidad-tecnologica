@@ -153,6 +153,31 @@
   border-style: solid;
 }
 
+/* Chip wrap con botón eliminar área */
+.ifm-chip-wrap { display: inline-flex; align-items: center; gap: 2px; }
+.ifm-chip-wrap-danger .ifm-chip { border-color: var(--color-denied); color: var(--color-denied); }
+
+.ifm-chip-del {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--color-border-strong);
+  background: transparent; color: var(--color-text-muted);
+  font-size: .6rem; cursor: pointer; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .12s, border-color .12s, color .12s;
+  flex-shrink: 0;
+}
+.ifm-chip-del:hover { background: #fee2e2; border-color: var(--color-denied); color: var(--color-denied); }
+
+.ifm-chip-del-confirm {
+  padding: 3px 8px; border-radius: 99px;
+  border: 1.5px solid var(--color-denied);
+  background: var(--color-denied); color: #fff;
+  font-size: .65rem; font-weight: 700; cursor: pointer;
+  font-family: var(--font-sans); white-space: nowrap;
+  animation: ifm-pulse-red .4s ease;
+}
+@keyframes ifm-pulse-red { from { opacity: .5; transform: scale(.9); } to { opacity: 1; transform: scale(1); } }
+
 /* Input secundario para "Otro" */
 .ifm-custom-input {
   margin-top: 6px;

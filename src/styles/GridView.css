@@ -258,10 +258,13 @@
 }
 .gv-popup-qty input {
   width: 100%; border: 1.5px solid var(--color-border-strong); border-radius: var(--radius-sm);
-  padding: 6px 8px; font-size: .84rem; font-weight: 700;
-  color: var(--color-primary); text-align: center; font-family: var(--font-sans);
+  padding: 6px 10px 6px 10px; font-size: 1rem; font-weight: 700;
+  color: var(--color-primary); text-align: left; font-family: var(--font-sans);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  -webkit-appearance: auto; appearance: auto;
 }
+.gv-popup-qty input::-webkit-inner-spin-button,
+.gv-popup-qty input::-webkit-outer-spin-button { opacity: 1; height: 28px; cursor: pointer; }
 .gv-popup-qty input:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
 
 .gv-popup-obs { display: flex; flex-direction: column; gap: 4px; }

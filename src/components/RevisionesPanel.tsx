@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import type { TechItem } from '../types';
 import type { Revision } from '../hooks/useRevisiones';
 import RevisionTableModal from './RevisionTableModal';
 import '../styles/RevisionesPanel.css';
@@ -8,11 +7,10 @@ interface Props {
   revisiones: Revision[];
   itemCount: number;
   onCloseRevision: () => void;
-  onUpdateRevision: (id: string, items: TechItem[]) => void;
 }
 
 const RevisionesPanel: React.FC<Props> = ({
-  revisiones, itemCount, onCloseRevision, onUpdateRevision,
+  revisiones, itemCount, onCloseRevision,
 }) => {
   const [expanded,     setExpanded]     = useState(false);
   const [confirmSave,  setConfirmSave]  = useState(false);
@@ -137,7 +135,6 @@ const RevisionesPanel: React.FC<Props> = ({
       {selected && (
         <RevisionTableModal
           revision={selected}
-          onSave={items => { onUpdateRevision(selected.id, items); setSelected(null); }}
           onClose={() => setSelected(null)}
         />
       )}

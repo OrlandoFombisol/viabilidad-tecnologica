@@ -262,6 +262,14 @@ export function useRequisicion(userEmail: string | null | undefined) {
     markSaved();
   }, [markSaved]);
 
+  const deleteArea = useCallback(async (area: string) => {
+    setItems(prev => prev.filter(i => i.area !== area));
+    setSyncStatus('saving');
+    const { error } = await supabase.from('solicitudes').delete().eq('area', area);
+    if (error) setSyncStatus('error');
+    else markSaved();
+  }, [markSaved]);
+
   const renameArea = useCallback(async (oldArea: string, newArea: string) => {
     const trimmed = newArea.trim();
     if (!trimmed || trimmed === oldArea) return;
@@ -333,6 +341,7 @@ export function useRequisicion(userEmail: string | null | undefined) {
     updateItem,
     addItem,
     deleteItem,
+    deleteArea,
     renameArea,
     renameSolicitante,
     approveAll,

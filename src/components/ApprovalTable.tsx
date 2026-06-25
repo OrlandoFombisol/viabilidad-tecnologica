@@ -10,6 +10,7 @@ interface ApprovalTableProps {
   onUpdateItem: (id: string, changes: Partial<TechItem>) => void;
   onAddItem:    (data: Omit<TechItem, 'id' | 'estado' | 'cantidadAprobada' | 'comentarioGerencia'>) => void;
   onDeleteItem: (id: string) => void;
+  onDeleteArea: (area: string) => void;
   onRenameArea: (oldArea: string, newArea: string) => void;
   onRenameSolicitante: (area: string, oldName: string, newName: string) => void;
   onResetAll: () => void;
@@ -21,7 +22,7 @@ type ModalState =
   | null;
 
 const ApprovalTable: React.FC<ApprovalTableProps> = ({
-  items, canApprove, onUpdateItem, onAddItem, onDeleteItem,
+  items, canApprove, onUpdateItem, onAddItem, onDeleteItem, onDeleteArea,
   onRenameArea, onRenameSolicitante, onResetAll,
 }) => {
   const areas = useMemo(() => Array.from(new Set(items.map(i => i.area))), [items]);
@@ -119,6 +120,7 @@ const ApprovalTable: React.FC<ApprovalTableProps> = ({
           defaultArea={modal.mode === 'add' ? modal.defaultArea : undefined}
           onSubmit={handleModalSubmit}
           onDelete={modal.mode === 'edit' ? () => { onDeleteItem(modal.item.id); setModal(null); } : undefined}
+          onDeleteArea={modal.mode === 'add' ? onDeleteArea : undefined}
           onClose={() => setModal(null)}
         />
       )}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import type { TechItem, Priority } from '../types';
 import '../styles/ItemFormModal.css';
 
@@ -33,14 +33,18 @@ interface ItemFormModalProps {
   defaultElemento?: string;
   onSubmit: (data: Omit<TechItem, 'id' | 'estado' | 'cantidadAprobada' | 'comentarioGerencia'>) => void;
   onDelete?: () => void;
+  onDeleteArea?: (area: string) => void;
   onClose: () => void;
 }
 
 const OTRO = '__otro__';
 
 const ItemFormModal: React.FC<ItemFormModalProps> = ({
-  mode, item, existingAreas, defaultArea, defaultSolicitante, defaultElemento, onSubmit, onDelete, onClose,
+  mode, item, existingAreas, defaultArea, defaultSolicitante, defaultElemento,
+  onSubmit, onDelete, onDeleteArea, onClose,
 }) => {
+  const [pendingDeleteArea, setPendingDeleteArea] = useState<string | null>(null);
+  const deleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initArea     = mode === 'edit' && item ? item.area     : (defaultArea ?? '');
   const initElemento = mode === 'edit' && item ? item.elemento : (defaultElemento ?? '');
 
@@ -151,14 +155,47 @@ const ItemFormModal: React.FC<ItemFormModalProps> = ({
             <label>Área / Departamento</label>
             <div className={`ifm-area-chips${errors.area ? ' ifm-chips-error' : ''}`}>
               {existingAreas.map(a => (
-                <button
-                  key={a}
-                  type="button"
-                  className={`ifm-chip${form.area === a && !useCustomArea ? ' ifm-chip-active' : ''}`}
-                  onClick={() => { setUseCustomArea(false); setField('area', a); }}
-                >
-                  {a}
-                </button>
+                <span key={a} className={`ifm-chip-wrap${pendingDeleteArea === a ? ' ifm-chip-wrap-danger' : ''}`}>
+                  <button
+                    type="button"
+                    className={`ifm-chip${form.area === a && !useCustomArea ? ' ifm-chip-active' : ''}`}
+                    onClick={() => { setUseCustomArea(false); setField('area', a); setPendingDeleteArea(null); }}
+                  >
+                    {a}
+                  </button>
+                  {onDeleteArea && (
+                    pendingDeleteArea === a ? (
+                      <button
+                        type="button"
+                        className="ifm-chip-del-confirm"
+                        title="Confirmar: eliminar área y todas sus solicitudes"
+                        onClick={e => {
+                          e.stopPropagation();
+                          if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
+                          setPendingDeleteArea(null);
+                          onDeleteArea(a);
+                          if (form.area === a) setField('area', '');
+                        }}
+                      >
+                        ¿Eliminar?
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="ifm-chip-del"
+                        title={`Eliminar área "${a}" y todas sus solicitudes`}
+                        onClick={e => {
+                          e.stopPropagation();
+                          setPendingDeleteArea(a);
+                          if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
+                          deleteTimerRef.current = setTimeout(() => setPendingDeleteArea(null), 4000);
+                        }}
+                      >
+                        ✕
+                      </button>
+                    )
+                  )}
+                </span>
               ))}
               <button
                 type="button"

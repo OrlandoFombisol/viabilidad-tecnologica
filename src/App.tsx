@@ -57,9 +57,10 @@ function App() {
     renameSolicitante,
     resetAll,
     replaceItems,
+    deleteArea,
   } = useRequisicion(role ?? undefined);
 
-  const { revisiones, upsertRevision, updateRevision, clearRevisiones } = useRevisiones();
+  const { revisiones, upsertRevision, clearRevisiones } = useRevisiones();
 
   const handleCloseRevision = useCallback(() => {
     if (items.length === 0) return;
@@ -120,22 +121,19 @@ function App() {
         onUpdateItem={updateItem}
         onAddItem={addItem}
         onDeleteItem={deleteItem}
+        onDeleteArea={area => void deleteArea(area)}
         onRenameArea={renameArea}
         onRenameSolicitante={renameSolicitante}
         onResetAll={() => { clearRevisiones(); void resetAll(); }}
       />
       <SummaryCards items={items} />
-      <ImportExcelButton onAddItem={addItem} />
-      <ExportButton
-        items={items}
-        syncStatus={syncStatus}
-      />
+      {!canApprove && <ImportExcelButton onAddItem={addItem} />}
+      {!canApprove && <ExportButton items={items} syncStatus={syncStatus} />}
       {canApprove && (
         <RevisionesPanel
           revisiones={revisiones}
           itemCount={items.length}
           onCloseRevision={handleCloseRevision}
-          onUpdateRevision={updateRevision}
         />
       )}
     </div>

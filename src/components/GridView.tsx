@@ -23,6 +23,7 @@ const ESTADO_CLASS: Record<ApprovalStatus, string> = {
 interface GridViewProps {
   items: TechItem[];
   canApprove: boolean;
+  viewOnly?: boolean; // sin popup, sin edición, sin borrado
   onUpdateItem: (id: string, changes: Partial<TechItem>) => void;
   onAddItem: (data: Omit<TechItem, 'id' | 'estado' | 'cantidadAprobada' | 'comentarioGerencia'>) => void;
   onDeleteItem: (id: string) => void;
@@ -46,9 +47,10 @@ const COL_ORDER_KEY  = 'vt_col_order';
 const AREA_ORDER_KEY = 'vt_area_order';
 
 const GridView: React.FC<GridViewProps> = ({
-  items, canApprove, onUpdateItem, onAddItem, onDeleteItem,
+  items, canApprove, viewOnly = false, onUpdateItem, onAddItem, onDeleteItem,
   onRenameArea, onRenameSolicitante, onOpenEditModal, existingAreas,
 }) => {
+  const canClick = canApprove && !viewOnly;
   // ── Ordering (persisted) ──
   const [columnOrder, setColumnOrder] = useState<string[]>(() => loadOrder(COL_ORDER_KEY));
   const [areaOrder,   setAreaOrder]   = useState<string[]>(() => {
@@ -164,7 +166,7 @@ const GridView: React.FC<GridViewProps> = ({
 
   // ── Popup (aprobación) ──
   const openPopup = (item: TechItem, e: React.MouseEvent<HTMLTableCellElement>) => {
-    if (!canApprove) return;
+    if (!canClick) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const popupEstH = 230, popupW = 265;
     const top  = rect.bottom + 4 + popupEstH > window.innerHeight ? Math.max(8, rect.top - popupEstH - 4) : rect.bottom + 4;
@@ -275,7 +277,7 @@ const GridView: React.FC<GridViewProps> = ({
                         ) : (
                           <span className="gv-area-label-row">
                             <strong>{area}</strong>
-                            {!canApprove && (
+                            {!canApprove && !viewOnly && (
                               <button className="gv-rename-btn" onClick={e => startEditArea(area, e)} title="Renombrar área">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
                                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -329,7 +331,7 @@ const GridView: React.FC<GridViewProps> = ({
                         ) : (
                           <span className="gv-user-label-row">
                             <span className="gv-user-name">{solicitante}</span>
-                            {!canApprove && (
+                            {!canApprove && !viewOnly && (
                               <>
                                 <button className="gv-rename-btn gv-person-rename-btn" onClick={e => startEditPerson(area, solicitante, e)} title="Renombrar">
                                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="10" height="10">
@@ -351,7 +353,7 @@ const GridView: React.FC<GridViewProps> = ({
                       {elementos.map(el => {
                         const item = byEl.get(el);
                         if (!item) {
-                          if (canApprove) {
+                          if (canApprove || viewOnly) {
                             return <td key={el} className="gv-td gv-cell-val gv-empty" />;
                           }
                           return (
@@ -365,9 +367,9 @@ const GridView: React.FC<GridViewProps> = ({
                         const isPendingDel = pendingDelete.has(item.id);
                         return (
                           <td key={el}
-                            className={`gv-td gv-cell-val gv-has-item gv-has-delete ${ESTADO_CLASS[item.estado]}${canApprove ? ' gv-clickable' : ''}${popup?.itemId === item.id ? ' gv-active-cell' : ''}`}
-                            title={canApprove ? `${item.elemento} · ${item.estado} — clic para revisar` : item.estado}
-                            onClick={canApprove ? e => openPopup(item, e) : undefined}
+                            className={`gv-td gv-cell-val gv-has-item gv-has-delete ${ESTADO_CLASS[item.estado]}${canClick ? ' gv-clickable' : ''}${popup?.itemId === item.id ? ' gv-active-cell' : ''}`}
+                            title={canClick ? `${item.elemento} · ${item.estado} — clic para revisar` : item.estado}
+                            onClick={canClick ? e => openPopup(item, e) : undefined}
                           >
                             <span className="gv-qty">{item.cantidadSolicitada}</span>
                             {item.estado !== 'Pendiente' && (
@@ -375,7 +377,7 @@ const GridView: React.FC<GridViewProps> = ({
                                 {item.estado === 'Aprobado' ? '✓' : item.estado === 'Negado' ? '✗' : '½'}
                               </span>
                             )}
-                            {!canApprove && (
+                            {!canApprove && !viewOnly && (
                               <button
                                 className={`gv-cell-delete-btn${isPendingDel ? ' gv-delete-pending' : ''}`}
                                 onClick={e => handleCellDelete(item.id, e)}
@@ -429,8 +431,8 @@ const GridView: React.FC<GridViewProps> = ({
           </div>
           {activeItem.estado === 'Aprobado parcial' && (
             <label className="gv-popup-qty">
-              <span>Cantidad aprobada</span>
-              <input type="number" min={0} max={activeItem.cantidadSolicitada}
+              <span>Cantidad aprobada (máx. {activeItem.cantidadSolicitada})</span>
+              <input type="number" min={1} max={activeItem.cantidadSolicitada} step={1}
                 value={activeItem.cantidadAprobada} onChange={e => changeQty(e.target.value)} />
             </label>
           )}
