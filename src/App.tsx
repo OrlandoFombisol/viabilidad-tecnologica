@@ -58,19 +58,18 @@ function App() {
     approveAll,
     resetAll,
     replaceItems,
-    manualSave,
   } = useRequisicion(role ?? undefined);
 
   const { revisiones, addRevision, updateRevision } = useRevisiones();
 
   const handleCloseRevision = useCallback(() => {
-    // Solo los aprobados (total o parcial) van al snapshot
-    const toSnapshot = items.filter(i =>
+    const hasApproved = items.some(i =>
       i.estado === 'Aprobado' || i.estado === 'Aprobado parcial'
     );
-    if (toSnapshot.length === 0) return;
+    if (!hasApproved) return;
 
-    addRevision(toSnapshot);
+    // Snapshot con TODOS los ítems y sus decisiones reales
+    addRevision(items);
 
     // Construir la tabla del siguiente ciclo
     const nextItems: TechItem[] = [];
@@ -137,8 +136,6 @@ function App() {
       <ExportButton
         items={items}
         syncStatus={syncStatus}
-        role={role}
-        onSave={manualSave}
       />
       {canApprove && (
         <RevisionesPanel

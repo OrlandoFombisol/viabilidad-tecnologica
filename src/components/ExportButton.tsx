@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import type { TechItem } from '../types';
 import type { SyncStatus } from '../hooks/useRequisicion';
-import type { UserRole } from '../contexts/AuthContext';
 import { exportToExcel } from '../utils/excelExport';
 import SyncIndicator from './SyncIndicator';
 import '../styles/ExportButton.css';
@@ -9,11 +8,9 @@ import '../styles/ExportButton.css';
 interface ExportButtonProps {
   items: TechItem[];
   syncStatus: SyncStatus;
-  role: UserRole | null;
-  onSave: () => void;
 }
 
-const ExportButton: React.FC<ExportButtonProps> = ({ items, syncStatus, role, onSave }) => {
+const ExportButton: React.FC<ExportButtonProps> = ({ items, syncStatus }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -77,14 +74,6 @@ const ExportButton: React.FC<ExportButtonProps> = ({ items, syncStatus, role, on
             </svg>
             Imprimir / PDF
           </button>
-          {role === 'gerencia' && (
-            <button className="btn btn-secondary" onClick={onSave} disabled={syncStatus === 'saving'}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" />
-              </svg>
-              Guardar revisión
-            </button>
-          )}
           <button
             className="btn btn-primary"
             onClick={() => setShowConfirm(true)}
